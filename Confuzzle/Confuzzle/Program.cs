@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using CommandLine;
 
@@ -61,6 +62,28 @@ namespace Confuzzle
             }
 
             Console.WriteLine("Enter password: ");
+            var pass = PromptUserForPassword();
+            password = pass;
+            Console.WriteLine("\nConfirm password: ");
+            pass = PromptUserForPassword();
+            Console.WriteLine();
+            if (string.Compare(password, pass, StringComparison.Ordinal) != 0)
+            {
+                Console.WriteLine("Passwords do not match.");
+                throw new UserAbortException();
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                Console.WriteLine("Invalid Password - Passwords cannot be blank");
+                return false;
+            }
+
+            return true;
+        }
+
+        private static string PromptUserForPassword()
+        {
             ConsoleKeyInfo key;
             var pass = string.Empty;
             do
@@ -82,15 +105,7 @@ namespace Confuzzle
                     }
                 }
             } while (key.Key != ConsoleKey.Enter); // Stops Receving Keys Once Enter is Pressed
-            password = pass;
-            Console.WriteLine();
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                Console.WriteLine("Invalid Password - Passwords cannot be blank");
-                return false;
-            }
-
-            return true;
+            return pass;
         }
 
         private static void Encrypt(Options options)
@@ -99,7 +114,7 @@ namespace Confuzzle
             if (!SetPassword(options)) return;
             InitialiseOutputFile(options);
             var fileContents = File.ReadAllText(options.InputFile);
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var stopwatch = Stopwatch.StartNew();
             var encrypted = Encryptor.SimpleEncryptWithPassword(fileContents, password);
             Console.WriteLine($"Encryption complete. {stopwatch.ElapsedMilliseconds:N}ms ");
             File.WriteAllText(options.OutputFile, encrypted);
@@ -130,7 +145,7 @@ namespace Confuzzle
             Console.WriteLine("Decrypt Mode");
             if (!SetPassword(options)) return;
             var fileContents = File.ReadAllText(options.InputFile);
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var stopwatch = Stopwatch.StartNew();
             var decrypted = Encryptor.SimpleDecryptWithPassword(fileContents, password);
             Console.WriteLine($"Decryption complete. {stopwatch.ElapsedMilliseconds:N}ms ");
             if (decrypted == null)
@@ -152,7 +167,8 @@ namespace Confuzzle
             var valid = options.Decrypt ^ options.Encrypt;
             if (!valid)
             {
-                Console.WriteLine("Only one of the Encrypt or Decrypt command line options can be in the same command line.");
+                Console.WriteLine(
+                    "Only one of the Encrypt or Decrypt command line options can be in the same command line.");
                 return false;
             }
 
@@ -172,7 +188,8 @@ namespace Confuzzle
 
             if (options.Silent && string.IsNullOrWhiteSpace(options.Password))
             {
-                Console.WriteLine("No password has been supplied and Silent mode is active. Password is required when running without user interaction.");
+                Console.WriteLine(
+                    "No password has been supplied and Silent mode is active. Password is required when running without user interaction.");
                 return false;
             }
 
