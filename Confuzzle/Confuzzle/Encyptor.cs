@@ -17,7 +17,6 @@ using Org.BouncyCastle.Security;
 
 namespace Confuzzle
 {
-
     public static class Encryptor
     {
         private static readonly SecureRandom Random = new SecureRandom();
@@ -34,33 +33,33 @@ namespace Confuzzle
 
 
         /// <summary>
-        /// Helper that generates a random new key on each call.
+        ///     Helper that generates a random new key on each call.
         /// </summary>
         /// <returns></returns>
         public static byte[] NewKey()
         {
-            var key = new byte[KeyBitSize / 8];
+            var key = new byte[KeyBitSize/8];
             Random.NextBytes(key);
             return key;
         }
 
         /// <summary>
-        /// Simple Encryption And Authentication (AES-GCM) of a UTF8 string.
+        ///     Simple Encryption And Authentication (AES-GCM) of a UTF8 string.
         /// </summary>
         /// <param name="secretMessage">The secret message.</param>
         /// <param name="key">The key.</param>
         /// <param name="nonSecretPayload">Optional non-secret payload.</param>
         /// <returns>
-        /// Encrypted Message
+        ///     Encrypted Message
         /// </returns>
         /// <exception cref="System.ArgumentException">Secret Message Required!;secretMessage</exception>
         /// <remarks>
-        /// Adds overhead of (Optional-Payload + BlockSize(16) + Message +  HMac-Tag(16)) * 1.33 Base64
+        ///     Adds overhead of (Optional-Payload + BlockSize(16) + Message +  HMac-Tag(16)) * 1.33 Base64
         /// </remarks>
         public static string SimpleEncrypt(string secretMessage, byte[] key, byte[] nonSecretPayload = null)
         {
             if (string.IsNullOrEmpty(secretMessage))
-                throw new ArgumentException("Secret Message Required!", "secretMessage");
+                throw new ArgumentException("Secret Message Required!", nameof(secretMessage));
 
             var plainText = Encoding.UTF8.GetBytes(secretMessage);
             var cipherText = SimpleEncrypt(plainText, key, nonSecretPayload);
@@ -69,7 +68,7 @@ namespace Confuzzle
 
 
         /// <summary>
-        /// Simple Decryption & Authentication (AES-GCM) of a UTF8 Message
+        ///     Simple Decryption & Authentication (AES-GCM) of a UTF8 Message
         /// </summary>
         /// <param name="encryptedMessage">The encrypted message.</param>
         /// <param name="key">The key.</param>
@@ -78,7 +77,7 @@ namespace Confuzzle
         public static string SimpleDecrypt(string encryptedMessage, byte[] key, int nonSecretPayloadLength = 0)
         {
             if (string.IsNullOrEmpty(encryptedMessage))
-                throw new ArgumentException("Encrypted Message Required!", "encryptedMessage");
+                throw new ArgumentException("Encrypted Message Required!", nameof(encryptedMessage));
 
             var cipherText = Convert.FromBase64String(encryptedMessage);
             var plainText = SimpleDecrypt(cipherText, key, nonSecretPayloadLength);
@@ -86,24 +85,23 @@ namespace Confuzzle
         }
 
         /// <summary>
-        /// Simple Encryption And Authentication (AES-GCM) of a UTF8 String
-        /// using key derived from a password (PBKDF2).
+        ///     Simple Encryption And Authentication (AES-GCM) of a UTF8 String
+        ///     using key derived from a password (PBKDF2).
         /// </summary>
         /// <param name="secretMessage">The secret message.</param>
         /// <param name="password">The password.</param>
         /// <param name="nonSecretPayload">The non secret payload.</param>
         /// <returns>
-        /// Encrypted Message
+        ///     Encrypted Message
         /// </returns>
         /// <remarks>
-        /// Significantly less secure than using random binary keys.
-        /// Adds additional non secret payload for key generation parameters.
+        ///     Significantly less secure than using random binary keys.
+        ///     Adds additional non secret payload for key generation parameters.
         /// </remarks>
-        public static string SimpleEncryptWithPassword(string secretMessage, string password,
-                                                       byte[] nonSecretPayload = null)
+        public static string SimpleEncryptWithPassword(string secretMessage, string password, byte[] nonSecretPayload = null)
         {
             if (string.IsNullOrEmpty(secretMessage))
-                throw new ArgumentException("Secret Message Required!", "secretMessage");
+                throw new ArgumentException("Secret Message Required!", nameof(secretMessage));
 
             var plainText = Encoding.UTF8.GetBytes(secretMessage);
             var cipherText = SimpleEncryptWithPassword(plainText, password, nonSecretPayload);
@@ -112,24 +110,23 @@ namespace Confuzzle
 
 
         /// <summary>
-        /// Simple Decryption and Authentication (AES-GCM) of a UTF8 message
-        /// using a key derived from a password (PBKDF2)
+        ///     Simple Decryption and Authentication (AES-GCM) of a UTF8 message
+        ///     using a key derived from a password (PBKDF2)
         /// </summary>
         /// <param name="encryptedMessage">The encrypted message.</param>
         /// <param name="password">The password.</param>
         /// <param name="nonSecretPayloadLength">Length of the non secret payload.</param>
         /// <returns>
-        /// Decrypted Message
+        ///     Decrypted Message
         /// </returns>
         /// <exception cref="System.ArgumentException">Encrypted Message Required!;encryptedMessage</exception>
         /// <remarks>
-        /// Significantly less secure than using random binary keys.
+        ///     Significantly less secure than using random binary keys.
         /// </remarks>
-        public static string SimpleDecryptWithPassword(string encryptedMessage, string password,
-                                                       int nonSecretPayloadLength = 0)
+        public static string SimpleDecryptWithPassword(string encryptedMessage, string password, int nonSecretPayloadLength = 0)
         {
             if (string.IsNullOrWhiteSpace(encryptedMessage))
-                throw new ArgumentException("Encrypted Message Required!", "encryptedMessage");
+                throw new ArgumentException("Encrypted Message Required!", nameof(encryptedMessage));
 
             var cipherText = Convert.FromBase64String(encryptedMessage);
             var plainText = SimpleDecryptWithPassword(cipherText, password, nonSecretPayloadLength);
@@ -138,29 +135,29 @@ namespace Confuzzle
 
 
         /// <summary>
-        /// Simple Encryption And Authentication (AES-GCM) of a UTF8 string.
+        ///     Simple Encryption And Authentication (AES-GCM) of a UTF8 string.
         /// </summary>
         /// <param name="secretMessage">The secret message.</param>
         /// <param name="key">The key.</param>
         /// <param name="nonSecretPayload">Optional non-secret payload.</param>
         /// <returns>Encrypted Message</returns>
         /// <remarks>
-        /// Adds overhead of (Optional-Payload + BlockSize(16) + Message +  HMac-Tag(16)) * 1.33 Base64
+        ///     Adds overhead of (Optional-Payload + BlockSize(16) + Message +  HMac-Tag(16)) * 1.33 Base64
         /// </remarks>
         public static byte[] SimpleEncrypt(byte[] secretMessage, byte[] key, byte[] nonSecretPayload = null)
         {
             //User Error Checks
-            if (key == null || key.Length != KeyBitSize / 8)
-                throw new ArgumentException(String.Format("Key needs to be {0} bit!", KeyBitSize), "key");
+            if (key == null || key.Length != KeyBitSize/8)
+                throw new ArgumentException($"Key needs to be {KeyBitSize} bit!", nameof(key));
 
             if (secretMessage == null || secretMessage.Length == 0)
-                throw new ArgumentException("Secret Message Required!", "secretMessage");
+                throw new ArgumentException("Secret Message Required!", nameof(secretMessage));
 
             //Non-secret Payload Optional
-            nonSecretPayload = nonSecretPayload ?? new byte[] { };
+            nonSecretPayload = nonSecretPayload ?? new byte[] {};
 
             //Using random nonce large enough not to repeat
-            var nonce = new byte[NonceBitSize / 8];
+            var nonce = new byte[NonceBitSize/8];
             Random.NextBytes(nonce, 0, nonce.Length);
 
             var cipher = new GcmBlockCipher(new AesFastEngine());
@@ -189,7 +186,7 @@ namespace Confuzzle
         }
 
         /// <summary>
-        /// Simple Decryption & Authentication (AES-GCM) of a UTF8 Message
+        ///     Simple Decryption & Authentication (AES-GCM) of a UTF8 Message
         /// </summary>
         /// <param name="encryptedMessage">The encrypted message.</param>
         /// <param name="key">The key.</param>
@@ -198,11 +195,11 @@ namespace Confuzzle
         public static byte[] SimpleDecrypt(byte[] encryptedMessage, byte[] key, int nonSecretPayloadLength = 0)
         {
             //User Error Checks
-            if (key == null || key.Length != KeyBitSize / 8)
-                throw new ArgumentException(String.Format("Key needs to be {0} bit!", KeyBitSize), "key");
+            if (key == null || key.Length != KeyBitSize/8)
+                throw new ArgumentException($"Key needs to be {KeyBitSize} bit!", nameof(key));
 
             if (encryptedMessage == null || encryptedMessage.Length == 0)
-                throw new ArgumentException("Encrypted Message Required!", "encryptedMessage");
+                throw new ArgumentException("Encrypted Message Required!", nameof(encryptedMessage));
 
             using (var cipherStream = new MemoryStream(encryptedMessage))
             using (var cipherReader = new BinaryReader(cipherStream))
@@ -211,7 +208,7 @@ namespace Confuzzle
                 var nonSecretPayload = cipherReader.ReadBytes(nonSecretPayloadLength);
 
                 //Grab Nonce
-                var nonce = cipherReader.ReadBytes(NonceBitSize / 8);
+                var nonce = cipherReader.ReadBytes(NonceBitSize/8);
 
                 var cipher = new GcmBlockCipher(new AesFastEngine());
                 var parameters = new AeadParameters(new KeyParameter(key), MacBitSize, nonce, nonSecretPayload);
@@ -225,7 +222,6 @@ namespace Confuzzle
                 {
                     var len = cipher.ProcessBytes(cipherText, 0, cipherText.Length, plainText, 0);
                     cipher.DoFinal(plainText, len);
-
                 }
                 catch (InvalidCipherTextException)
                 {
@@ -235,39 +231,38 @@ namespace Confuzzle
 
                 return plainText;
             }
-
         }
 
         /// <summary>
-        /// Simple Encryption And Authentication (AES-GCM) of a UTF8 String
-        /// using key derived from a password.
+        ///     Simple Encryption And Authentication (AES-GCM) of a UTF8 String
+        ///     using key derived from a password.
         /// </summary>
         /// <param name="secretMessage">The secret message.</param>
         /// <param name="password">The password.</param>
         /// <param name="nonSecretPayload">The non secret payload.</param>
         /// <returns>
-        /// Encrypted Message
+        ///     Encrypted Message
         /// </returns>
         /// <exception cref="System.ArgumentException">Must have a password of minimum length;password</exception>
         /// <remarks>
-        /// Significantly less secure than using random binary keys.
-        /// Adds additional non secret payload for key generation parameters.
+        ///     Significantly less secure than using random binary keys.
+        ///     Adds additional non secret payload for key generation parameters.
         /// </remarks>
         public static byte[] SimpleEncryptWithPassword(byte[] secretMessage, string password, byte[] nonSecretPayload = null)
         {
-            nonSecretPayload = nonSecretPayload ?? new byte[] { };
+            nonSecretPayload = nonSecretPayload ?? new byte[] {};
 
             //User Error Checks
             if (string.IsNullOrWhiteSpace(password) || password.Length < MinPasswordLength)
-                throw new ArgumentException(String.Format("Must have a password of at least {0} characters!", MinPasswordLength), "password");
+                throw new ArgumentException($"Must have a password of at least {MinPasswordLength} characters!", nameof(password));
 
             if (secretMessage == null || secretMessage.Length == 0)
-                throw new ArgumentException("Secret Message Required!", "secretMessage");
+                throw new ArgumentException("Secret Message Required!", nameof(secretMessage));
 
             var generator = new Pkcs5S2ParametersGenerator();
 
             //Use Random Salt to minimize pre-generated weak password attacks.
-            var salt = new byte[SaltBitSize / 8];
+            var salt = new byte[SaltBitSize/8];
             Random.NextBytes(salt);
 
             generator.Init(
@@ -276,7 +271,7 @@ namespace Confuzzle
                 Iterations);
 
             //Generate Key
-            var key = (KeyParameter)generator.GenerateDerivedMacParameters(KeyBitSize);
+            var key = (KeyParameter) generator.GenerateDerivedMacParameters(KeyBitSize);
 
             //Create Full Non Secret Payload
             var payload = new byte[salt.Length + nonSecretPayload.Length];
@@ -287,32 +282,32 @@ namespace Confuzzle
         }
 
         /// <summary>
-        /// Simple Decryption and Authentication of a UTF8 message
-        /// using a key derived from a password
+        ///     Simple Decryption and Authentication of a UTF8 message
+        ///     using a key derived from a password
         /// </summary>
         /// <param name="encryptedMessage">The encrypted message.</param>
         /// <param name="password">The password.</param>
         /// <param name="nonSecretPayloadLength">Length of the non secret payload.</param>
         /// <returns>
-        /// Decrypted Message
+        ///     Decrypted Message
         /// </returns>
         /// <exception cref="System.ArgumentException">Must have a password of minimum length;password</exception>
         /// <remarks>
-        /// Significantly less secure than using random binary keys.
+        ///     Significantly less secure than using random binary keys.
         /// </remarks>
         public static byte[] SimpleDecryptWithPassword(byte[] encryptedMessage, string password, int nonSecretPayloadLength = 0)
         {
             //User Error Checks
             if (string.IsNullOrWhiteSpace(password) || password.Length < MinPasswordLength)
-                throw new ArgumentException(String.Format("Must have a password of at least {0} characters!", MinPasswordLength), "password");
+                throw new ArgumentException($"Must have a password of at least {MinPasswordLength} characters!", nameof(password));
 
             if (encryptedMessage == null || encryptedMessage.Length == 0)
-                throw new ArgumentException("Encrypted Message Required!", "encryptedMessage");
+                throw new ArgumentException("Encrypted Message Required!", nameof(encryptedMessage));
 
             var generator = new Pkcs5S2ParametersGenerator();
 
             //Grab Salt from Payload
-            var salt = new byte[SaltBitSize / 8];
+            var salt = new byte[SaltBitSize/8];
             Array.Copy(encryptedMessage, nonSecretPayloadLength, salt, 0, salt.Length);
 
             generator.Init(
@@ -321,7 +316,7 @@ namespace Confuzzle
                 Iterations);
 
             //Generate Key
-            var key = (KeyParameter)generator.GenerateDerivedMacParameters(KeyBitSize);
+            var key = (KeyParameter) generator.GenerateDerivedMacParameters(KeyBitSize);
 
             return SimpleDecrypt(encryptedMessage, key.GetKey(), salt.Length + nonSecretPayloadLength);
         }

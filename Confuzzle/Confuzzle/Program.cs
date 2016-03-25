@@ -39,6 +39,11 @@ namespace Confuzzle
                     Console.WriteLine();
                     Console.WriteLine("Encryption validation error: " + ex.Message);
                 }
+                catch (OverflowException)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("File is too large to encrypt.");
+                }
             }
             else
             {
@@ -116,7 +121,7 @@ namespace Confuzzle
             var fileContents = File.ReadAllText(options.InputFile);
             var stopwatch = Stopwatch.StartNew();
             var encrypted = Encryptor.SimpleEncryptWithPassword(fileContents, password);
-            Console.WriteLine($"Encryption complete. {stopwatch.ElapsedMilliseconds:N}ms ");
+            Console.WriteLine($"Encryption complete. {stopwatch.ElapsedMilliseconds:N}\b\b\bms ");
             File.WriteAllText(options.OutputFile, encrypted);
             if (File.Exists(options.OutputFile))
             {
@@ -147,7 +152,7 @@ namespace Confuzzle
             var fileContents = File.ReadAllText(options.InputFile);
             var stopwatch = Stopwatch.StartNew();
             var decrypted = Encryptor.SimpleDecryptWithPassword(fileContents, password);
-            Console.WriteLine($"Decryption complete. {stopwatch.ElapsedMilliseconds:N}ms ");
+            Console.WriteLine($"Decryption complete. {stopwatch.ElapsedMilliseconds:N}\b\b\bms ");
             if (decrypted == null)
             {
                 Console.WriteLine("Decryption FAILED!");
