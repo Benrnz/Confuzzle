@@ -23,3 +23,4 @@ Same as above execpt Confuzzle will run in silent mode and not prompt for any us
 Other Hints
 * If the password is incorrect when attempting to decrypt a file, the output file, if it already exists, will not be touched.
 * Although it is supported DO NOT supply your password using the command line argument unless you are scripting this tool.  Passwords are visible in plain text on the screen and the in command line history.
+* Maximum file size is approximately 500Mb. 
