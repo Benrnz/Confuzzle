@@ -1,8 +1,10 @@
 # Confuzzle
-A handy quick and terse command line utility to encrypt and decrypt text files with a simple password.
+Do you find encryption hard? How about doing it in a best practice fasion?  Good, so do I, thats why we've spent some time researching a best practice way of doing it, and wrapping it in an easy to use package. The idea behind Confuzzle is to provide a few really simple methods of encrypting text files and streams.
+Confuzzle command line is a handy and terse utility to encrypt and decrypt text files with a simple password. The longer your password the more difficult it will be to decrypt.
+Confuzzle also contains a .NET class library for use in your code. The API is intended to provide simple methods based on strings or streams.
 
-This tool is intended only for text files at this stage.  All text is expected to be UTF-8.  I'm using this tool to encrypt JSON, XML and Text files only at this point, so anything else is untested.
-Encryption is provided by BouncyCastle. (http://www.bouncycastle.org/csharp/)
+All text is expected to be UTF-8.  I'm using this tool to encrypt JSON, XML and Text files only at this point, so anything else is untested.
+Encryption is currently provided by BouncyCastle. (http://www.bouncycastle.org/csharp/). However, I will be moving this off to only depend on standard .NET System.Cryptography libraries soon.
 
 ## WARNING
 Use at your own risk.  Data can be lost if you forget your password, or modify the encryption algorithms.
