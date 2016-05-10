@@ -118,11 +118,20 @@ namespace Confuzzle
             Console.WriteLine("Encrypt Mode");
             if (!SetPassword(options)) return;
             InitialiseOutputFile(options);
-            var fileContents = File.ReadAllText(options.InputFile);
+
             var stopwatch = Stopwatch.StartNew();
-            var encrypted = Encryptor.SimpleEncryptWithPassword(fileContents, password);
+            using (var inputFile = File.Open(options.InputFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                using (var outputFile = File.Open(options.OutputFile, FileMode.Create, FileAccess.Write, FileShare.Read))
+                {
+                    using (var cryptoStream = CipherStream.Create(outputFile, password))
+                    {
+                        inputFile.CopyTo(cryptoStream);
+                    }
+                }
+            }
             Console.WriteLine($"Encryption complete. {stopwatch.ElapsedMilliseconds:N}\b\b\bms ");
-            File.WriteAllText(options.OutputFile, encrypted);
+
             if (File.Exists(options.OutputFile))
             {
                 Console.WriteLine($"{options.OutputFile} created successfully.");
@@ -149,18 +158,21 @@ namespace Confuzzle
         {
             Console.WriteLine("Decrypt Mode");
             if (!SetPassword(options)) return;
-            var fileContents = File.ReadAllText(options.InputFile);
-            var stopwatch = Stopwatch.StartNew();
-            var decrypted = Encryptor.SimpleDecryptWithPassword(fileContents, password);
-            Console.WriteLine($"Decryption complete. {stopwatch.ElapsedMilliseconds:N}\b\b\bms ");
-            if (decrypted == null)
-            {
-                Console.WriteLine("Decryption FAILED!");
-                throw new UserAbortException();
-            }
-
             InitialiseOutputFile(options);
-            File.WriteAllText(options.OutputFile, decrypted);
+
+            var stopwatch = Stopwatch.StartNew();
+            using (var inputFile = File.Open(options.InputFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                using (var outputFile = File.Open(options.OutputFile, FileMode.Create, FileAccess.Write, FileShare.Read))
+                {
+                    using (var cryptoStream = CipherStream.Open(inputFile, password))
+                    {
+                        cryptoStream.CopyTo(outputFile);
+                    }
+                }
+            }
+            Console.WriteLine($"Decryption complete. {stopwatch.ElapsedMilliseconds:N}\b\b\bms ");
+
             if (File.Exists(options.OutputFile))
             {
                 Console.WriteLine($"{options.OutputFile} created successfully.");
