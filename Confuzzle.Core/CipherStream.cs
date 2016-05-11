@@ -331,8 +331,7 @@ namespace Confuzzle.Core
         /// </remarks>
         public override void SetLength(long value)
         {
-            // TODO ***Jamie - infinite recursive call.
-            SetLength(this.startPosition + value);
+            this.stream.SetLength(this.startPosition + value);
         }
 
         /// <summary>
