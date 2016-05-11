@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using CommandLine;
+using Confuzzle.Core;
 
 namespace Confuzzle
 {

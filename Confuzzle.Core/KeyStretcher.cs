@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Security.Cryptography;
 
-namespace Confuzzle
+namespace Confuzzle.Core
 {
     /// <summary>
     ///     Stretches passwords into cryptographic keys using PBKDF2 (RFC 2898).
