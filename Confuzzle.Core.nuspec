@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Confuzzle.Core</id>
+	<title>Confuzzle.Core (DLL only) - A simple encryption libray</title>
+    <version>1.0</version>
+    <authors>Ben Rees (Benrnz)</authors>
+    <owners>Benrnz,Nzgeek</owners>
+    <licenseUrl>https://github.com/Benrnz/Confuzzle/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Benrnz/Confuzzle</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Do you find encryption hard? How about doing it in a best practice fashion? Good, so do I, that's why we've spent some time researching a best practice way of doing it, and wrapping it in an easy to use package. The idea behind Confuzzle is to provide a few really simple methods of encrypting text files and streams</description>
+    <releaseNotes>Initial Release</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>Encryption</tags>
+  </metadata>
+  <files>
+      <file src="Confuzzle.Core\bin\Release\Confuzzle.Core.dll" target="net46" />
+  </files>
+
+</package>
