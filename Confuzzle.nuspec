@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Confuzzle</id>
-	<title>Confuzzle - Command Line: A simple encryption utility</title>
+	<title>Confuzzle - Command Line</title>
     <version>1.0</version>
     <authors>Ben Rees (Benrnz)</authors>
     <owners>Benrnz,Nzgeek</owners>

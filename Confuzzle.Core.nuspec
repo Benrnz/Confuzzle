@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Confuzzle.Core</id>
-	<title>Confuzzle.Core (DLL only) - A simple encryption libray</title>
+	<title>Confuzzle.Core (DLL only)</title>
     <version>1.0</version>
     <authors>Ben Rees (Benrnz)</authors>
     <owners>Benrnz,Nzgeek</owners>
