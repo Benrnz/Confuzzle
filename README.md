@@ -25,7 +25,37 @@ Special thanks to Jamie for introducing stream based file encryption to cater fo
 
 New contributions are welcome.
 
-## Examples
+## C# Examples using Confuzzle.Core
+Encrypt a file
+```
+using (FileStream inputStream = File.Open(unencryptedInputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+{
+    using (FileStream outputStream = File.Open(encryptedOutputFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+    {
+        using (CipherStream cryptoStream = CipherStream.Create(outputStream, password))
+        {
+            inputStream.CopyTo(cryptoStream);
+        }
+    }
+}
+ ```
+
+Decrypt a file
+```
+using (FileStream inputStream = File.Open(encryptedInputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+{
+    using (FileStream outputStream = File.Open(decryptedOutputFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+    {
+        using (CipherStream cryptoStream = CipherStream.Open(inputStream, password))
+        {
+            cryptoStream.CopyTo(outputStream);
+        }
+    }
+}
+```
+
+
+## Command Line Examples
 `Confuzzle.exe -i C:\data\MyFile.xml -e -o C:\data\MyFile.secure`
 
 Encrypts the file MyFile.xml into a new file called MyFile.secure. The source file is left untouched. The output file will be deleted if it exists (with interactive confirmation from the user). The password will be prompted and masked.
