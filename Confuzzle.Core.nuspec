@@ -15,8 +15,8 @@
     <tags>Encryption</tags>
   </metadata>
   <files>
-      <file src="Confuzzle.Core\bin\Release\Confuzzle.Core.dll" target="net46" />
-      <file src="Confuzzle.Core\bin\Release\Confuzzle.Core.dll" target="net461" />
+      <file src="Confuzzle.Core\bin\Release\Confuzzle.Core.dll" target="lib\net46" />
+      <file src="Confuzzle.Core\bin\Release\Confuzzle.Core.dll" target="lib\net461" />
   </files>
 
 </package>
