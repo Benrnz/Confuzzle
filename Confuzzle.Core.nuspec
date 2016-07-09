@@ -16,6 +16,7 @@
   </metadata>
   <files>
       <file src="Confuzzle.Core\bin\Release\Confuzzle.Core.dll" target="net46" />
+      <file src="Confuzzle.Core\bin\Release\Confuzzle.Core.dll" target="net461" />
   </files>
 
 </package>
