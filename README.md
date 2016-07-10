@@ -26,7 +26,7 @@ Special thanks to Jamie for introducing stream based file encryption to cater fo
 New contributions are welcome.
 
 ## C# Examples using Confuzzle.Core
-
+For C# usage you will only need the Confuzzle.Core.dll.
 ### Encrypt a file into another file asynchronously 
 ```
 using (var inputStream = new FileStream(unencryptedInputFileName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
