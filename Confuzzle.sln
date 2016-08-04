@@ -5,9 +5,9 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfuzzleCommandLine", "Confuzzle\ConfuzzleCommandLine.csproj", "{2E571330-9E00-4F06-99EB-68804ED712E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfuzzleCore", "Confuzzle.Core\ConfuzzleCore.csproj", "{595D5745-89AC-459B-91BD-C0EBF0F52A22}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfuzzleCore", "ConfuzzleCore\ConfuzzleCore.csproj", "{595D5745-89AC-459B-91BD-C0EBF0F52A22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confuzzle.Test", "Confuzzle.Test\Confuzzle.Test.csproj", "{7795A25C-B909-42A7-8984-6EB45045F45C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfuzzleTest", "ConfuzzleTest\ConfuzzleTest.csproj", "{7795A25C-B909-42A7-8984-6EB45045F45C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

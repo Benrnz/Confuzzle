@@ -64,7 +64,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Confuzzle.Core\ConfuzzleCore.csproj">
+    <ProjectReference Include="..\ConfuzzleCore\ConfuzzleCore.csproj">
       <Project>{595d5745-89ac-459b-91bd-c0ebf0f52a22}</Project>
       <Name>ConfuzzleCore</Name>
     </ProjectReference>
