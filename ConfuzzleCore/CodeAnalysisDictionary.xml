@@ -1,25 +1,26 @@
-﻿<?xml version="1.0" encoding="utf-8" ?> 
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Dictionary>
-      <Words>
-         <Unrecognized>
-            <Word>knokker</Word>
-         </Unrecognized>
-         <Recognized>
-            <Word>Confuzzle</Word>
-         </Recognized>
-         <Deprecated>
-            <Term PreferredAlternate=""></Term>
-         </Deprecated>
-         <Compound>
-            <Term CompoundAlternate=""></Term>
-         </Compound>
-         <DiscreteExceptions>
-            <Term></Term>
-         </DiscreteExceptions>
-      </Words>
-      <Acronyms>
-         <CasingExceptions>
-            <Acronym>IV</Acronym>
-         </CasingExceptions>
-      </Acronyms>
-   </Dictionary>
+  <Words>
+    <Unrecognized>
+      <Word>knokker</Word>
+    </Unrecognized>
+    <Recognized>
+      <Word>Confuzzle</Word>
+    </Recognized>
+    <Deprecated>
+      <Term PreferredAlternate=""></Term>
+    </Deprecated>
+    <Compound>
+      <Term CompoundAlternate=""></Term>
+    </Compound>
+    <DiscreteExceptions>
+      <Term></Term>
+    </DiscreteExceptions>
+  </Words>
+  <Acronyms>
+    <CasingExceptions>
+      <Acronym>IV</Acronym>
+    </CasingExceptions>
+  </Acronyms>
+</Dictionary>

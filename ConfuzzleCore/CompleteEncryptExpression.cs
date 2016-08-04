@@ -22,20 +22,20 @@ namespace ConfuzzleCore
         /// <returns>A encrypted set of bytes.</returns>
         public async Task<byte[]> IntoByteArray()
         {
-            switch (expression.EncryptFrom)
+            switch (this.expression.EncryptFrom)
             {
                 case SourceMode.String:
-                    if (expression.SecurePassword != null)
+                    if (this.expression.SecurePassword != null)
                     {
-                        return await ConfuzzleInternal.EncryptStringIntoBytesAsync(expression.StringInputData, expression.SecurePassword);
+                        return await ConfuzzleInternal.EncryptStringIntoBytesAsync(this.expression.StringInputData, this.expression.SecurePassword);
                     }
-                    return await ConfuzzleInternal.EncryptStringIntoBytesAsync(expression.StringInputData, expression.Password);
+                    return await ConfuzzleInternal.EncryptStringIntoBytesAsync(this.expression.StringInputData, this.expression.Password);
                 case SourceMode.File:
-                    if (expression.SecurePassword != null)
+                    if (this.expression.SecurePassword != null)
                     {
-                        return await ConfuzzleInternal.EncryptFileIntoBytesAsync(expression.SourceFile, expression.SecurePassword);
+                        return await ConfuzzleInternal.EncryptFileIntoBytesAsync(this.expression.SourceFile, this.expression.SecurePassword);
                     }
-                    return await ConfuzzleInternal.EncryptFileIntoBytesAsync(expression.SourceFile, expression.Password);
+                    return await ConfuzzleInternal.EncryptFileIntoBytesAsync(this.expression.SourceFile, this.expression.Password);
                 default:
                     throw new NotSupportedException();
             }
@@ -50,23 +50,23 @@ namespace ConfuzzleCore
         /// </param>
         public async Task IntoFile(string fileName)
         {
-            switch (expression.EncryptFrom)
+            switch (this.expression.EncryptFrom)
             {
                 case SourceMode.String:
-                    if (expression.SecurePassword != null)
+                    if (this.expression.SecurePassword != null)
                     {
-                        await ConfuzzleInternal.EncryptStringIntoFileAsync(expression.StringInputData, fileName, expression.SecurePassword);
+                        await ConfuzzleInternal.EncryptStringIntoFileAsync(this.expression.StringInputData, fileName, this.expression.SecurePassword);
                         return;
                     }
-                    await ConfuzzleInternal.EncryptStringIntoFileAsync(expression.StringInputData, fileName, expression.Password);
+                    await ConfuzzleInternal.EncryptStringIntoFileAsync(this.expression.StringInputData, fileName, this.expression.Password);
                     return;
                 case SourceMode.File:
-                    if (expression.SecurePassword != null)
+                    if (this.expression.SecurePassword != null)
                     {
-                        await ConfuzzleInternal.EncryptFileIntoNewFileAsync(expression.SourceFile, fileName, expression.SecurePassword);
+                        await ConfuzzleInternal.EncryptFileIntoNewFileAsync(this.expression.SourceFile, fileName, this.expression.SecurePassword);
                         return;
                     }
-                    await ConfuzzleInternal.EncryptFileIntoNewFileAsync(expression.SourceFile, fileName, expression.Password);
+                    await ConfuzzleInternal.EncryptFileIntoNewFileAsync(this.expression.SourceFile, fileName, this.expression.Password);
                     return;
                 default:
                     throw new NotSupportedException();

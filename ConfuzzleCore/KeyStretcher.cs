@@ -20,11 +20,6 @@ namespace ConfuzzleCore
         public const int DefaultSaltSize = 16;
 
         /// <summary>
-        ///     A random number generator for creating random salts.
-        /// </summary>
-        public static RandomNumberGenerator Rng { get; set; } = new RNGCryptoServiceProvider();
-
-        /// <summary>
         ///     Stretches a password using a random salt and the default iteration count.
         /// </summary>
         /// <param name="password">The password to stretch.</param>
@@ -103,6 +98,11 @@ namespace ConfuzzleCore
             : base(password, salt ?? GenerateSalt(DefaultSaltSize), iterationCount)
         {
         }
+
+        /// <summary>
+        ///     A random number generator for creating random salts.
+        /// </summary>
+        public static RandomNumberGenerator Rng { get; set; } = new RNGCryptoServiceProvider();
 
         /// <summary>
         ///     Generates a new random salt.

@@ -19,28 +19,6 @@ namespace ConfuzzleCore
         {
             return await DecryptFileIntoString(inputFileName, () => SecureStringToString(password));
         }
- 
-        public static async Task DecryptFromFileIntoNewFileAsync(string inputFileName, string outputFileName, SecureString password)
-        {
-            await DecryptFromFileIntoNewFile(inputFileName, outputFileName, () => SecureStringToString(password));
-        }
-
-        public static async Task DecryptFromFileIntoNewFileAsync(string inputFileName, string outputFileName, string password)
-        {
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
-            await DecryptFromFileIntoNewFile(inputFileName, outputFileName, () => password);
-        }
-
-        public static async Task<string> DecryptFromBytesIntoStringAsync(byte[] inputData, string password)
-        {
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
-            return await DecryptString(inputData, () => password);
-        }
-
-        public static async Task<string> DecryptFromBytesIntoStringAsync(byte[] inputData, SecureString password)
-        {
-            return await DecryptString(inputData, () => SecureStringToString(password));
-        }
 
         public static async Task DecryptFromBytesIntoNewFileAsync(byte[] inputData, string outputFileName, SecureString password)
         {
@@ -55,15 +33,37 @@ namespace ConfuzzleCore
             File.WriteAllText(outputFileName, data);
         }
 
-        public static async Task EncryptStringIntoFileAsync(string inputData, string outputFileName, string password)
+        public static async Task<string> DecryptFromBytesIntoStringAsync(byte[] inputData, string password)
         {
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
-            await EncryptStringIntoFile(inputData, outputFileName, () => password);
+            return await DecryptString(inputData, () => password);
         }
 
-        public static async Task EncryptStringIntoFileAsync(string inputData, string outputFileName, SecureString password)
+        public static async Task<string> DecryptFromBytesIntoStringAsync(byte[] inputData, SecureString password)
         {
-            await EncryptStringIntoFile(inputData, outputFileName, () => SecureStringToString(password));
+            return await DecryptString(inputData, () => SecureStringToString(password));
+        }
+
+        public static async Task DecryptFromFileIntoNewFileAsync(string inputFileName, string outputFileName, SecureString password)
+        {
+            await DecryptFromFileIntoNewFile(inputFileName, outputFileName, () => SecureStringToString(password));
+        }
+
+        public static async Task DecryptFromFileIntoNewFileAsync(string inputFileName, string outputFileName, string password)
+        {
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
+            await DecryptFromFileIntoNewFile(inputFileName, outputFileName, () => password);
+        }
+
+        public static async Task<byte[]> EncryptFileIntoBytesAsync(string inputFileName, SecureString password)
+        {
+            return await EncryptFileIntoBytes(inputFileName, () => SecureStringToString(password));
+        }
+
+        public static async Task<byte[]> EncryptFileIntoBytesAsync(string inputFileName, string password)
+        {
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
+            return await EncryptFileIntoBytes(inputFileName, () => password);
         }
 
         public static async Task EncryptFileIntoNewFileAsync(string inputFileName, string outputFileName, SecureString password)
@@ -88,15 +88,15 @@ namespace ConfuzzleCore
             return await EncryptString(inputData, () => SecureStringToString(password));
         }
 
-        public static async Task<byte[]> EncryptFileIntoBytesAsync(string inputFileName, SecureString password)
-        {
-            return await EncryptFileIntoBytes(inputFileName, () => SecureStringToString(password));
-        }
-
-        public static async Task<byte[]> EncryptFileIntoBytesAsync(string inputFileName, string password)
+        public static async Task EncryptStringIntoFileAsync(string inputData, string outputFileName, string password)
         {
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
-            return await EncryptFileIntoBytes(inputFileName, () => password);
+            await EncryptStringIntoFile(inputData, outputFileName, () => password);
+        }
+
+        public static async Task EncryptStringIntoFileAsync(string inputData, string outputFileName, SecureString password)
+        {
+            await EncryptStringIntoFile(inputData, outputFileName, () => SecureStringToString(password));
         }
 
         internal static string SecureStringToString(SecureString password)
@@ -173,22 +173,6 @@ namespace ConfuzzleCore
             }
         }
 
-        private static async Task EncryptFileIntoFile(string inputFileName, string outputFileName, Func<string> getPassword)
-        {
-            if (inputFileName == null) throw new ArgumentNullException(nameof(inputFileName));
-            if (outputFileName == null) throw new ArgumentNullException(nameof(outputFileName));
-            using (var inputStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                using (var outputStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-                {
-                    using (var cryptoStream = CipherStream.Create(outputStream, getPassword()))
-                    {
-                        await inputStream.CopyToAsync(cryptoStream);
-                    }
-                }
-            }
-        }
-
         private static async Task<byte[]> EncryptFileIntoBytes(string inputFileName, Func<string> getPassword)
         {
             if (inputFileName == null) throw new ArgumentNullException(nameof(inputFileName));
@@ -201,6 +185,22 @@ namespace ConfuzzleCore
                         await inputStream.CopyToAsync(cryptoStream);
                     }
                     return outputStream.ToArray();
+                }
+            }
+        }
+
+        private static async Task EncryptFileIntoFile(string inputFileName, string outputFileName, Func<string> getPassword)
+        {
+            if (inputFileName == null) throw new ArgumentNullException(nameof(inputFileName));
+            if (outputFileName == null) throw new ArgumentNullException(nameof(outputFileName));
+            using (var inputStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                using (var outputStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+                {
+                    using (var cryptoStream = CipherStream.Create(outputStream, getPassword()))
+                    {
+                        await inputStream.CopyToAsync(cryptoStream);
+                    }
                 }
             }
         }

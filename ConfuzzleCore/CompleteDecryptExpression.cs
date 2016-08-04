@@ -26,23 +26,23 @@ namespace ConfuzzleCore
         /// </param>
         public async Task IntoFile(string fileName)
         {
-            switch (expression.DecryptFrom)
+            switch (this.expression.DecryptFrom)
             {
                 case SourceMode.Bytes:
-                    if (expression.SecurePassword != null)
+                    if (this.expression.SecurePassword != null)
                     {
-                        await ConfuzzleInternal.DecryptFromBytesIntoNewFileAsync(expression.SourceData, fileName, expression.SecurePassword);
+                        await ConfuzzleInternal.DecryptFromBytesIntoNewFileAsync(this.expression.SourceData, fileName, this.expression.SecurePassword);
                         return;
                     }
-                    await ConfuzzleInternal.DecryptFromBytesIntoNewFileAsync(expression.SourceData, fileName, expression.Password);
+                    await ConfuzzleInternal.DecryptFromBytesIntoNewFileAsync(this.expression.SourceData, fileName, this.expression.Password);
                     return;
                 case SourceMode.File:
-                    if (expression.SecurePassword != null)
+                    if (this.expression.SecurePassword != null)
                     {
-                        await ConfuzzleInternal.DecryptFromFileIntoNewFileAsync(expression.SourceFile, fileName, expression.SecurePassword);
+                        await ConfuzzleInternal.DecryptFromFileIntoNewFileAsync(this.expression.SourceFile, fileName, this.expression.SecurePassword);
                         return;
                     }
-                    await ConfuzzleInternal.DecryptFromFileIntoNewFileAsync(expression.SourceFile, fileName, expression.Password);
+                    await ConfuzzleInternal.DecryptFromFileIntoNewFileAsync(this.expression.SourceFile, fileName, this.expression.Password);
                     return;
                 default:
                     throw new NotSupportedException();
@@ -56,20 +56,20 @@ namespace ConfuzzleCore
         /// <returns>A UTF8 encoded text string.</returns>
         public async Task<string> IntoString()
         {
-            switch (expression.DecryptFrom)
+            switch (this.expression.DecryptFrom)
             {
                 case SourceMode.Bytes:
-                    if (expression.SecurePassword != null)
+                    if (this.expression.SecurePassword != null)
                     {
-                        return await ConfuzzleInternal.DecryptFromBytesIntoStringAsync(expression.SourceData, expression.SecurePassword);
+                        return await ConfuzzleInternal.DecryptFromBytesIntoStringAsync(this.expression.SourceData, this.expression.SecurePassword);
                     }
-                    return await ConfuzzleInternal.DecryptFromBytesIntoStringAsync(expression.SourceData, expression.Password);
+                    return await ConfuzzleInternal.DecryptFromBytesIntoStringAsync(this.expression.SourceData, this.expression.Password);
                 case SourceMode.File:
-                    if (expression.SecurePassword != null)
+                    if (this.expression.SecurePassword != null)
                     {
-                        return await ConfuzzleInternal.DecryptFileIntoStringAsync(expression.SourceFile, expression.SecurePassword);
+                        return await ConfuzzleInternal.DecryptFileIntoStringAsync(this.expression.SourceFile, this.expression.SecurePassword);
                     }
-                    return await ConfuzzleInternal.DecryptFileIntoStringAsync(expression.SourceFile, expression.Password);
+                    return await ConfuzzleInternal.DecryptFileIntoStringAsync(this.expression.SourceFile, this.expression.Password);
                 default:
                     throw new NotSupportedException();
             }
