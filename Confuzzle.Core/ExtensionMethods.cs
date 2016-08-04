@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Confuzzle.Core
+namespace ConfuzzleCore
 {
     internal static class ExtensionMethods
     {

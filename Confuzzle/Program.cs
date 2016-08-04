@@ -3,14 +3,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using CommandLine;
+using ConfuzzleCore;
 
-namespace Confuzzle
+namespace ConfuzzleCommandLine
 {
     public static class Program
     {
         private static string password;
 
-        public static async void Main(string[] args)
+        public static void Main(string[] args)
         {
             Console.WriteLine("Confuzzle - File encryption - Rees.biz");
             Console.WriteLine("Version " + GetVersion());
@@ -24,11 +25,11 @@ namespace Confuzzle
                 {
                     if (options.Decrypt)
                     {
-                        await Decrypt(options);
+                        Decrypt(options).Wait();
                     }
                     else if (options.Encrypt)
                     {
-                        await Encrypt(options);
+                        Encrypt(options).Wait();
                     }
                 }
                 catch (UserAbortException)
@@ -130,7 +131,7 @@ namespace Confuzzle
             var stopwatch = Stopwatch.StartNew();
             var unencryptedInputFileName = options.InputFile;
             var encryptedOutputFileName = options.OutputFile;
-            await Core.Confuzzle.SimpleEncryptWithPasswordAsync(unencryptedInputFileName, encryptedOutputFileName, password);
+            await Confuzzle.SimpleEncryptWithPasswordAsync(unencryptedInputFileName, encryptedOutputFileName, password);
             Console.WriteLine($"Encryption complete. {stopwatch.ElapsedMilliseconds:N}\b\b\bms ");
 
             if (File.Exists(options.OutputFile))
@@ -165,7 +166,7 @@ namespace Confuzzle
 
             var encryptedInputFileName = options.InputFile;
             var decryptedOutputFileName = options.OutputFile;
-            await Core.Confuzzle.SimpleDecryptWithPasswordAsync(encryptedInputFileName, decryptedOutputFileName, password);
+            await Confuzzle.SimpleDecryptWithPasswordAsync(encryptedInputFileName, decryptedOutputFileName, password);
 
             Console.WriteLine($"Decryption complete. {stopwatch.ElapsedMilliseconds:N}\b\b\bms ");
 

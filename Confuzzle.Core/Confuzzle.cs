@@ -5,7 +5,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Confuzzle.Core
+namespace ConfuzzleCore
 {
     /// <summary>
     ///     A convenience static class contain simplified methods for encrypting and decrypting files and strings.
