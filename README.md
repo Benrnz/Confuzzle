@@ -29,6 +29,35 @@ New contributions are welcome.
 For C# usage you will only need the Confuzzle.Core.dll.
 ### Encrypt a file into another file asynchronously 
 ```
+await Confuzzle.SimpleEncryptWithPasswordAsync("C:\\PathToMyFile\\Myfile.txt", "C:\\PathToMyFile\\Myfile.txt.secure", "MySecretSquirrelPassword");
+```
+
+### Decrypt a file into another file asynchronously
+```
+await Confuzzle.SimpleDecryptWithPasswordAsync("C:\\PathToMyFile\\Myfile.txt.secure", "C:\\PathToMyFile\\Myfile.txt", "MySecretSquirrelPassword");
+```
+
+### Encrypt a string asynchronously 
+```
+byte[] bytes = await Confuzzle.SimpleEncryptWithPasswordAsync("This is the string I want to encrypt", "MySecretSquirrelPassword");
+var base64 = Convert.ToBase64String(bytes);
+```
+
+### Decrypt a string asynchronously
+```
+var bytes = Convert.FromBase64String(base64);
+string result = await Confuzzle.SimpleDecryptWithPasswordAsync(bytes, "MySecretSquirrelPassword");
+```
+
+### Synchronous Operations
+Synchronous operations are not encouraged. Large files and strings will be inefficiently managed in memory if asynchronous behaviour is not used.
+If you insist on accessing Confuzzle synchronously see Advanced usage below.
+
+### Advanced Usage
+The helper methods on the Confuzzle static class can be bypassed and you can access the CipherStream class directly for more advanced usage.
+For example:
+To encrypt a file
+```
 using (var inputStream = new FileStream(unencryptedInputFileName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
 {
     using (var outputStream = new FileStream(encryptedOutputFileName, FileMode.Create, FileAccess.Write, FileShare.Read, bufferSize: 4096, useAsync: true))
@@ -40,86 +69,24 @@ using (var inputStream = new FileStream(unencryptedInputFileName, FileMode.Open,
         }
     }
 }
- ```
-
-### Encrypt a file into another file synchronously
-```
-using (FileStream inputStream = File.Open(unencryptedInputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-{
-    using (FileStream outputStream = File.Open(encryptedOutputFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-    {
-        using (CipherStream cryptoStream = CipherStream.Create(outputStream, password))
-        {
-            // Copy the contents of the input stream into the output stream (file) and in doing so encrypt it.
-            inputStream.CopyTo(cryptoStream);
-        }
-    }
-}
- ```
-
-### Decrypt a file into another file asynchronously
-```
-using (var inputStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
-{
-    using (var outputStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read, bufferSize: 4096, useAsync: true))
-    {
-        using (CipherStream cryptoStream = CipherStream.Open(inputStream, password))
-        {
-            // Copy the contents of the input stream into the output stream (file) and in doing so encrypt it.
-            await cryptoStream.CopyToAsync(outputStream);
-        }
-    }
-}
 ```
 
-### Decrypt a file into another file synchronously
+To encrypt a string synchronously
 ```
-using (FileStream inputStream = File.Open(encryptedInputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-{
-    using (FileStream outputStream = File.Open(decryptedOutputFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-    {
-        using (CipherStream cryptoStream = CipherStream.Open(inputStream, password))
-        {
-            // Copy the contents of the input stream into the output stream (file) and in doing so encrypt it.
-            cryptoStream.CopyTo(outputStream);
-        }
-    }
-}
-```
-
-### Encrypt a string into a file asynchronously 
-```
-using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(stringData)))
-{
-    using (var outputStream = new FileStream(encryptedOutputFileName, FileMode.Create, FileAccess.Write, FileShare.Read, bufferSize: 4096, useAsync: true))
-    {
-        using (var cryptoStream = CipherStream.Create(outputStream, password))
-        {
-            await inputStream.CopyToAsync(cryptoStream);
-        }
-    }
-}
-```
-
-### Decrypt a file into a string asynchronously
-```
-using (var inputStream = new FileStream(encryptedInputFileName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
+using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(inputData)))
 {
     using (var outputStream = new MemoryStream())
     {
-        using (var cryptoStream = CipherStream.Open(inputStream, password))
+        using (var cryptoStream = CipherStream.Create(outputStream, getPassword()))
         {
-            await cryptoStream.CopyToAsync(outputStream);
+            inputStream.CopyTo(cryptoStream);
         }
 
         outputStream.Position = 0;
-        using (var reader = new StreamReader(outputStream))
-        {
-            var decryptedStringData = await reader.ReadToEndAsync();
-        }
+        return outputStream.ToArray();
     }
 }
-```
+``` 
 
 ## Command Line Examples
 `Confuzzle.exe -i C:\data\MyFile.xml -e -o C:\data\MyFile.secure`
