@@ -1,201 +1,57 @@
-﻿using System;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Security;
 
 namespace ConfuzzleCore
 {
     /// <summary>
-    ///     A convenience static class contain simplified methods for encrypting and decrypting files and strings.
+    ///     A convenience helper class that simplifies encrypting and decrypting files and strings.
+    ///     All strings are treated with UTF8 encoding.
+    ///     Prefer using <see cref="SecureString" /> for passwords. This standard .NET class more securely handles passwords in
+    ///     memory.
+    ///     Prefer using file to file encryption and decryption over strings and byte arrays for large data sets.
     /// </summary>
     public static class Confuzzle
     {
         /// <summary>
-        /// Decrypt an existing encrypted file on the local disk.
-        /// Prefer this overload using files and the <see cref="SecureString"/> class to more safely store the password.
+        ///     Decrypt from a set of encrypted bytes. The byte array is expected to be a previously encrypted set of bytes using
+        ///     one of the Encrypt overloads.
+        ///     Warning: Using encryption with in memory constructs, such as a byte array, can be slow and inefficient for large
+        ///     data sets.
         /// </summary>
-        /// <param name="inputFileName">A full path and file name to the encrypted file.</param>
-        /// <param name="outputFileName">A full path and file name to write the decrypted contents of the file.</param>
-        /// <param name="password">The password to decrypt the file.</param>
-        public static async Task SimpleDecryptWithPasswordAsync(string inputFileName, string outputFileName, SecureString password)
+        /// <param name="bytes">The byte array to decrypt.</param>
+        public static PasswordRequiredDecryptExpression DecryptBytes(byte[] bytes)
         {
-            await DecryptFile(inputFileName, outputFileName, () => SecureStringToString(password));
+            return new PasswordRequiredDecryptExpression().FromBytes(bytes);
         }
 
         /// <summary>
-        /// Decrypt an existing encrypted file on the local disk.
-        /// Prefer the <see cref="SimpleDecryptWithPasswordAsync(string,string,SecureString)"/> overload over this one where possible.
+        ///     Decrypt an existing encrypted file on the local disk.
         /// </summary>
-        /// <param name="inputFileName">A full path and file name to the encrypted file.</param>
-        /// <param name="outputFileName">A full path and file name to write the decrypted contents of the file.</param>
-        /// <param name="password">The password to decrypt the file.</param>
-        public static async Task SimpleDecryptWithPasswordAsync(string inputFileName, string outputFileName, string password)
+        /// <param name="fileName">A full path and file name to the encrypted file. This file remains unchanged.</param>
+        public static PasswordRequiredDecryptExpression DecryptFile(string fileName)
         {
-            if (password == null) throw new ArgumentNullException(nameof(password));
-            await DecryptFile(inputFileName, outputFileName, () => password);
+            return new PasswordRequiredDecryptExpression().FromFile(fileName);
         }
 
         /// <summary>
-        /// Decrypt a string.
-        /// Prefer the <see cref="SimpleDecryptWithPasswordAsync(string,string,SecureString)"/> overload over this one where possible.
-        /// Using encryption with in memory strings can be slow and inefficient for large strings.
+        ///     Encrypt an existing file on the local disk.
         /// </summary>
-        /// <param name="inputData">The string to decrypt</param>
-        /// <param name="password">The password to decrypt the file.</param>
-        public static async Task<string> SimpleDecryptWithPasswordAsync(byte[] inputData, string password)
+        /// <param name="fileName">A full path and file name to the file you wish to encrypt. This file remains unchanged.</param>
+        public static PasswordRequiredEncryptExpression EncryptFile(string fileName)
         {
-            if (password == null) throw new ArgumentNullException(nameof(password));
-            return await DecryptString(inputData, () => password);
+            return new PasswordRequiredEncryptExpression().SetMode(fileName, SourceMode.File);
         }
 
         /// <summary>
-        /// Decrypt a string.
-        /// Prefer the <see cref="SimpleDecryptWithPasswordAsync(string,string,SecureString)"/> overload over this one where possible.
-        /// Using encryption with in memory strings can be slow and inefficient for large strings.
+        ///     Encrypt a string.
+        ///     Warning: Using encryption with in memory strings can be slow and inefficient for large strings.
         /// </summary>
-        /// <param name="inputData">The string to decrypt</param>
-        /// <param name="password">The password to decrypt the file.</param>
-        public static async Task<string> SimpleDecryptWithPasswordAsync(byte[] inputData, SecureString password)
+        /// <param name="inputData">
+        ///     The string to encrypt. This text will be UTF8 encoded to convert it to a byte array for
+        ///     encryption.
+        /// </param>
+        public static PasswordRequiredEncryptExpression EncryptString(string inputData)
         {
-            return await DecryptString(inputData, () => SecureStringToString(password));
-        }
-
-        /// <summary>
-        /// Encrypt an existing file on the local disk.
-        /// Prefer this overload using files and the <see cref="SecureString"/> class to more safely store the password.
-        /// </summary>
-        /// <param name="inputFileName">A full path and file name to the file you wish to encrypt.</param>
-        /// <param name="outputFileName">A full path and file name to write the encrypted copy of the file.</param>
-        /// <param name="password">The password to encrypt the file.</param>
-        public static async Task SimpleEncryptWithPasswordAsync(string inputFileName, string outputFileName, SecureString password)
-        {
-            await EncryptFile(inputFileName, outputFileName, () => SecureStringToString(password));
-        }
-
-        /// <summary>
-        /// Encrypt an existing file on the local disk.
-        /// Prefer the <see cref="SimpleEncryptWithPasswordAsync(string,string,SecureString)"/> overload over this one where possible.
-        /// </summary>
-        /// <param name="inputFileName">A full path and file name to the file you wish to encrypt.</param>
-        /// <param name="outputFileName">A full path and file name to write the encrypted copy of the file.</param>
-        /// <param name="password">The password to encrypt the file.</param>
-        public static async Task SimpleEncryptWithPasswordAsync(string inputFileName, string outputFileName, string password)
-        {
-            if (password == null) throw new ArgumentNullException(nameof(password));
-            await EncryptFile(inputFileName, outputFileName, () => password);
-        }
-
-        /// <summary>
-        /// Encrypt a string.
-        /// Prefer the <see cref="SimpleEncryptWithPasswordAsync(string,string,SecureString)"/> overload over this one where possible.
-        /// Using encryption with in memory strings can be slow and inefficient for large strings.
-        /// </summary>
-        /// <param name="inputData">The string to encrypt.</param>
-        /// <param name="password">The password to encrypt the file.</param>
-        public static async Task<byte[]> SimpleEncryptWithPasswordAsync(string inputData, string password)
-        {
-            if (password == null) throw new ArgumentNullException(nameof(password));
-            return await EncryptString(inputData, () => password);
-        }
-
-        /// <summary>
-        /// Encrypt a string.
-        /// Prefer the <see cref="SimpleEncryptWithPasswordAsync(string,string,SecureString)"/> overload over this one where possible.
-        /// Using encryption with in memory strings can be slow and inefficient for large strings.
-        /// </summary>
-        /// <param name="inputData">The string to encrypt.</param>
-        /// <param name="password">The password to encrypt the file.</param>
-        public static async Task<byte[]> SimpleEncryptWithPasswordAsync(string inputData, SecureString password)
-        {
-            return await EncryptString(inputData, () => SecureStringToString(password));
-        }
-
-        internal static string SecureStringToString(SecureString password)
-        {
-            if (password == null) throw new ArgumentNullException(nameof(password));
-            var valuePtr = IntPtr.Zero;
-            try
-            {
-                valuePtr = Marshal.SecureStringToGlobalAllocUnicode(password);
-                return Marshal.PtrToStringUni(valuePtr);
-            }
-            finally
-            {
-                Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
-            }
-        }
-
-        private static async Task DecryptFile(string inputFileName, string outputFileName, Func<string> getPassword)
-        {
-            if (inputFileName == null) throw new ArgumentNullException(nameof(inputFileName));
-            if (outputFileName == null) throw new ArgumentNullException(nameof(outputFileName));
-            using (var inputStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                using (var outputStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-                {
-                    using (var cryptoStream = CipherStream.Open(inputStream, getPassword()))
-                    {
-                        await cryptoStream.CopyToAsync(outputStream);
-                    }
-                }
-            }
-        }
-
-        private static async Task<string> DecryptString(byte[] inputData, Func<string> getPassword)
-        {
-            if (inputData == null) throw new ArgumentNullException(nameof(inputData));
-            using (var inputStream = new MemoryStream(inputData))
-            {
-                using (var outputStream = new MemoryStream())
-                {
-                    using (var cryptoStream = CipherStream.Open(inputStream, getPassword()))
-                    {
-                        await cryptoStream.CopyToAsync(outputStream);
-                    }
-
-                    outputStream.Position = 0;
-                    using (var reader = new StreamReader(outputStream))
-                    {
-                        return await reader.ReadToEndAsync();
-                    }
-                }
-            }
-        }
-
-        private static async Task EncryptFile(string inputFileName, string outputFileName, Func<string> getPassword)
-        {
-            if (inputFileName == null) throw new ArgumentNullException(nameof(inputFileName));
-            if (outputFileName == null) throw new ArgumentNullException(nameof(outputFileName));
-            using (var inputStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                using (var outputStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-                {
-                    using (var cryptoStream = CipherStream.Create(outputStream, getPassword()))
-                    {
-                        await inputStream.CopyToAsync(cryptoStream);
-                    }
-                }
-            }
-        }
-
-        private static async Task<byte[]> EncryptString(string inputData, Func<string> getPassword)
-        {
-            if (inputData == null) throw new ArgumentNullException(nameof(inputData));
-            using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(inputData)))
-            {
-                using (var outputStream = new MemoryStream())
-                {
-                    using (var cryptoStream = CipherStream.Create(outputStream, getPassword()))
-                    {
-                        await inputStream.CopyToAsync(cryptoStream);
-                    }
-
-                    outputStream.Position = 0;
-                    return outputStream.ToArray();
-                }
-            }
+            return new PasswordRequiredEncryptExpression().SetMode(inputData, SourceMode.String);
         }
     }
 }

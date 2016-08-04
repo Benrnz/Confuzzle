@@ -21,12 +21,12 @@ namespace ConfuzzleCore
         /// <summary>
         ///     The number of bytes in the header that's used by the data length fields.
         /// </summary>
-        private const int HeaderOverhead = 2*sizeof (ushort);
+        private const int HeaderOverhead = 2 * sizeof(ushort);
 
         private readonly Stream stream;
-        private long startPosition;
         private CtrModeTransform ctrTransform;
         private long position;
+        private long startPosition;
 
         /// <summary>
         ///     Creates a new <see cref="CipherStream" />.
@@ -44,7 +44,7 @@ namespace ConfuzzleCore
             CipherFactory = cipherFactory ?? ConfuzzleCore.CipherFactory.Default;
 
             using (var cipher = CipherFactory.CreateCipher())
-                BlockLength = cipher.BlockSize/8;
+                BlockLength = cipher.BlockSize / 8;
 
             this.ctrTransform = new CtrModeTransform(this);
         }
@@ -115,7 +115,7 @@ namespace ConfuzzleCore
         /// <summary>
         ///     The minimum length of the nonce in bytes.
         /// </summary>
-        public int MinNonceLength => BlockLength/2;
+        public int MinNonceLength => BlockLength / 2;
 
         /// <summary>
         ///     A random value used to ensure that each encrypted file has different ciphertext.
@@ -200,6 +200,14 @@ namespace ConfuzzleCore
         }
 
         /// <summary>
+        ///     Clears all buffers for this stream and causes any buffered data to be written.
+        /// </summary>
+        public override void Flush()
+        {
+            this.stream.Flush();
+        }
+
+        /// <summary>
         ///     Creates a <see cref="CipherStream" /> over encrypted data stored in a data stream.
         /// </summary>
         /// <param name="stream">The stream that contains encrypted data.</param>
@@ -236,14 +244,6 @@ namespace ConfuzzleCore
             var ctrStream = new CipherStream(stream, key, cipherFactory);
             ctrStream.LoadParameters();
             return ctrStream;
-        }
-
-        /// <summary>
-        ///     Clears all buffers for this stream and causes any buffered data to be written.
-        /// </summary>
-        public override void Flush()
-        {
-            this.stream.Flush();
         }
 
         /// <summary>
@@ -400,7 +400,7 @@ namespace ConfuzzleCore
 
                 // Read the nonce length and validate it.
                 int nonceLength = this.stream.ReadUShort();
-                if (HeaderOverhead/2 + nonceLength > headerLength)
+                if (HeaderOverhead / 2 + nonceLength > headerLength)
                     throw new InvalidDataException("Stream header is invalid.");
                 if (nonceLength < MinNonceLength || nonceLength > MaxNonceLength)
                     throw new InvalidDataException("Stream contains invalid nonce.");

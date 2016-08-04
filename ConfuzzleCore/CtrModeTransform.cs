@@ -44,8 +44,8 @@ namespace ConfuzzleCore
             this.stream = stream;
 
             this.blockLength = this.stream.BlockLength;
-            this.blocksPerTransform = PreferredTransformLength/this.blockLength;
-            this.ctrTransformLength = this.blockLength*this.blocksPerTransform;
+            this.blocksPerTransform = PreferredTransformLength / this.blockLength;
+            this.ctrTransformLength = this.blockLength * this.blocksPerTransform;
         }
 
         // This code added to correctly implement the disposable pattern.
@@ -74,7 +74,7 @@ namespace ConfuzzleCore
                 PrepareTransform(fromPosition);
 
                 // Calculate where in the CTR transformation to start and how much can be processed.
-                var xorIndex = (int) (fromPosition%this.ctrTransformLength);
+                var xorIndex = (int) (fromPosition % this.ctrTransformLength);
                 var xorCount = Math.Min(this.ctrTransformLength - xorIndex, length);
 
                 // Do the XOR transformation based on the CTR transformation block.
@@ -125,8 +125,7 @@ namespace ConfuzzleCore
                 // The IV is based on the nonce and any associated user data.
                 var ivSeed = new byte[this.stream.Nonce.Length + this.stream.PasswordSalt.Length];
                 Array.Copy(this.stream.Nonce, 0, ivSeed, 0, this.stream.Nonce.Length);
-                Array.Copy(this.stream.PasswordSalt, 0, ivSeed, this.stream.Nonce.Length,
-                    this.stream.PasswordSalt.Length);
+                Array.Copy(this.stream.PasswordSalt, 0, ivSeed, this.stream.Nonce.Length, this.stream.PasswordSalt.Length);
 
                 // Fill the IV using the hash of the seed. This may use only part of the hash, or may repeat some or all
                 // of the hash.
@@ -210,12 +209,12 @@ namespace ConfuzzleCore
                 Initialize();
 
             // Get the block number for the position. If it's within the current range, there's nothing to do.
-            var blockNumber = fromPosition/this.blockLength;
+            var blockNumber = fromPosition / this.blockLength;
             if (blockNumber <= this.startBlock && blockNumber < this.endBlock)
                 return;
 
             // Calculate the start and end block indices for the transform.
-            var currentStartBlock = blockNumber/this.blocksPerTransform*this.blocksPerTransform;
+            var currentStartBlock = blockNumber / this.blocksPerTransform * this.blocksPerTransform;
             var currentEndBlock = currentStartBlock + this.blocksPerTransform;
 
             // Allocate memory for the seed blocks.
@@ -225,7 +224,7 @@ namespace ConfuzzleCore
             for (var blockIndex = 0; blockIndex < this.blocksPerTransform; ++blockIndex)
             {
                 // Array segment for the seed block.
-                var ctrBlock = new ArraySegment<byte>(blockInit, blockIndex*this.blockLength, this.blockLength);
+                var ctrBlock = new ArraySegment<byte>(blockInit, blockIndex * this.blockLength, this.blockLength);
                 // 1-based number of the block, relative to the start of the stream.
                 var ctrNumber = currentStartBlock + blockIndex + 1;
                 // Fill the block.

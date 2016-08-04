@@ -66,7 +66,7 @@ namespace ConfuzzleCore
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
 
-            var valueBytes = ReadExact(stream, sizeof (ushort));
+            var valueBytes = ReadExact(stream, sizeof(ushort));
             if (BitConverter.IsLittleEndian)
                 Array.Reverse(valueBytes);
 

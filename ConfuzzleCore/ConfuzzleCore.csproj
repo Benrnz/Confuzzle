@@ -48,16 +48,19 @@
   <ItemGroup>
     <Compile Include="CipherFactory.cs" />
     <Compile Include="CipherStream.cs" />
+    <Compile Include="CompleteDecryptExpression.cs" />
+    <Compile Include="CompleteEncryptExpression.cs" />
     <Compile Include="CtrModeTransform.cs" />
-    <Compile Include="Confuzzle.cs" />
+    <Compile Include="ConfuzzleInternal.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Confuzzle.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ICipherFactory.cs" />
     <Compile Include="KeyStretcher.cs" />
+    <Compile Include="PasswordRequiredDecryptExpression.cs" />
+    <Compile Include="PasswordRequiredEncryptExpression.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
+    <Compile Include="SourceMode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
