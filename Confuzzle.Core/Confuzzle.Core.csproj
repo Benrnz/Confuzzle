@@ -49,6 +49,7 @@
     <Compile Include="CipherFactory.cs" />
     <Compile Include="CipherStream.cs" />
     <Compile Include="CtrModeTransform.cs" />
+    <Compile Include="Confuzzle.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="ICipherFactory.cs" />
     <Compile Include="KeyStretcher.cs" />
