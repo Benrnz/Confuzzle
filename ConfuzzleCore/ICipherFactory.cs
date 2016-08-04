@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace Confuzzle.Core
+namespace ConfuzzleCore
 {
     /// <summary>
     ///     A factory for creating cryptographic algorithms.

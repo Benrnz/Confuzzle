@@ -3,7 +3,7 @@
 using CommandLine;
 using CommandLine.Text;
 
-namespace Confuzzle
+namespace ConfuzzleCommandLine
 {
     public class Options
     {

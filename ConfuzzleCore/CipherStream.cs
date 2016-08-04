@@ -2,7 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 
-namespace Confuzzle.Core
+namespace ConfuzzleCore
 {
     /// <summary>
     ///     A filter stream that encrypts and decrypts data to/from an underlying stream.
@@ -41,7 +41,7 @@ namespace Confuzzle.Core
         {
             this.stream = stream;
             Key = key;
-            CipherFactory = cipherFactory ?? Core.CipherFactory.Default;
+            CipherFactory = cipherFactory ?? ConfuzzleCore.CipherFactory.Default;
 
             using (var cipher = CipherFactory.CreateCipher())
                 BlockLength = cipher.BlockSize/8;
@@ -191,8 +191,7 @@ namespace Confuzzle.Core
         /// <returns>
         ///     A <see cref="CipherStream" /> ready to encrypt data.
         /// </returns>
-        public static CipherStream Create(Stream stream, string password, ICipherFactory cipherFactory = null,
-            byte[] nonce = null, byte[] salt = null)
+        public static CipherStream Create(Stream stream, string password, ICipherFactory cipherFactory = null, byte[] nonce = null, byte[] salt = null)
         {
             var key = new KeyStretcher(password, salt);
             var ctrStream = new CipherStream(stream, key, cipherFactory);

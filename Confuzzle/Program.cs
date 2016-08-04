@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using CommandLine;
-using Confuzzle.Core;
+using ConfuzzleCore;
 
-namespace Confuzzle
+namespace ConfuzzleCommandLine
 {
     public static class Program
     {
@@ -13,6 +14,7 @@ namespace Confuzzle
         public static void Main(string[] args)
         {
             Console.WriteLine("Confuzzle - File encryption - Rees.biz");
+            Console.WriteLine("Version " + GetVersion());
 
             var options = new Options();
             if (Parser.Default.ParseArguments(args, options) && ValidateArgs(options))
@@ -23,11 +25,11 @@ namespace Confuzzle
                 {
                     if (options.Decrypt)
                     {
-                        Decrypt(options);
+                        Decrypt(options).Wait();
                     }
                     else if (options.Encrypt)
                     {
-                        Encrypt(options);
+                        Encrypt(options).Wait();
                     }
                 }
                 catch (UserAbortException)
@@ -50,15 +52,18 @@ namespace Confuzzle
             {
                 Console.WriteLine("Error - invalid arguments.");
             }
-
-            if (!options.Silent)
-            {
-                Console.WriteLine("Press enter to exit");
-                Console.ReadLine();
-            }
         }
 
-        private static bool SetPassword(Options options)
+        private static string GetVersion()
+        {
+            var assembly = typeof(Program).Assembly;
+            var versionInfo = assembly.GetName().Version;
+            var file = new FileInfo(assembly.Location);
+            var fileDate = file.Exists ? file.CreationTime.ToShortDateString() : string.Empty;
+            return $"{versionInfo.Major}.{versionInfo.Minor}.{versionInfo.Build} {fileDate}";
+        }
+
+        private static bool SetPassword(Options options, bool confirm = true)
         {
             Console.WriteLine();
             if (options.Silent)
@@ -70,13 +75,16 @@ namespace Confuzzle
             Console.WriteLine("Enter password: ");
             var pass = PromptUserForPassword();
             password = pass;
-            Console.WriteLine("\nConfirm password: ");
-            pass = PromptUserForPassword();
-            Console.WriteLine();
-            if (string.Compare(password, pass, StringComparison.Ordinal) != 0)
+            if (confirm)
             {
-                Console.WriteLine("Passwords do not match.");
-                throw new UserAbortException();
+                Console.WriteLine("\nConfirm password: ");
+                pass = PromptUserForPassword();
+                Console.WriteLine();
+                if (string.Compare(password, pass, StringComparison.Ordinal) != 0)
+                {
+                    Console.WriteLine("Passwords do not match.");
+                    throw new UserAbortException();
+                }
             }
 
             if (string.IsNullOrWhiteSpace(password))
@@ -114,23 +122,16 @@ namespace Confuzzle
             return pass;
         }
 
-        private static void Encrypt(Options options)
+        private static async Task Encrypt(Options options)
         {
             Console.WriteLine("Encrypt Mode");
             if (!SetPassword(options)) return;
             InitialiseOutputFile(options);
 
             var stopwatch = Stopwatch.StartNew();
-            using (var inputFile = File.Open(options.InputFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                using (var outputFile = File.Open(options.OutputFile, FileMode.Create, FileAccess.Write, FileShare.Read))
-                {
-                    using (var cryptoStream = CipherStream.Create(outputFile, password))
-                    {
-                        inputFile.CopyTo(cryptoStream);
-                    }
-                }
-            }
+            var unencryptedInputFileName = options.InputFile;
+            var encryptedOutputFileName = options.OutputFile;
+            await Confuzzle.SimpleEncryptWithPasswordAsync(unencryptedInputFileName, encryptedOutputFileName, password);
             Console.WriteLine($"Encryption complete. {stopwatch.ElapsedMilliseconds:N}\b\b\bms ");
 
             if (File.Exists(options.OutputFile))
@@ -155,23 +156,18 @@ namespace Confuzzle
             }
         }
 
-        private static void Decrypt(Options options)
+        private static async Task Decrypt(Options options)
         {
             Console.WriteLine("Decrypt Mode");
-            if (!SetPassword(options)) return;
+            if (!SetPassword(options, false)) return;
             InitialiseOutputFile(options);
 
             var stopwatch = Stopwatch.StartNew();
-            using (var inputFile = File.Open(options.InputFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                using (var outputFile = File.Open(options.OutputFile, FileMode.Create, FileAccess.Write, FileShare.Read))
-                {
-                    using (var cryptoStream = CipherStream.Open(inputFile, password))
-                    {
-                        cryptoStream.CopyTo(outputFile);
-                    }
-                }
-            }
+
+            var encryptedInputFileName = options.InputFile;
+            var decryptedOutputFileName = options.OutputFile;
+            await Confuzzle.SimpleDecryptWithPasswordAsync(encryptedInputFileName, decryptedOutputFileName, password);
+
             Console.WriteLine($"Decryption complete. {stopwatch.ElapsedMilliseconds:N}\b\b\bms ");
 
             if (File.Exists(options.OutputFile))

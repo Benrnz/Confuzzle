@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace Confuzzle.Core
+namespace ConfuzzleCore
 {
     /// <summary>
     ///     Handles the encryption and decryption of data using AES CTR mode transformation.

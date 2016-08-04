@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Confuzzle
+namespace ConfuzzleCommandLine
 {
     [Serializable]
     internal class UserAbortException : Exception

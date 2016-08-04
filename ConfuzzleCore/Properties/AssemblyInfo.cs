@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Confuzzle")]
+[assembly: AssemblyTitle("Confuzzle.Core")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Confuzzle")]
+[assembly: AssemblyProduct("Confuzzle.Core")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("2e571330-9e00-4f06-99eb-68804ed712e5")]
+[assembly: Guid("595d5745-89ac-459b-91bd-c0ebf0f52a22")]
 
 // Version information for an assembly consists of the following four values:
 //
