@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfuzzleCommandLine", "Con
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfuzzleCore", "Confuzzle.Core\ConfuzzleCore.csproj", "{595D5745-89AC-459B-91BD-C0EBF0F52A22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confuzzle.Test", "Confuzzle.Test\Confuzzle.Test.csproj", "{7795A25C-B909-42A7-8984-6EB45045F45C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{595D5745-89AC-459B-91BD-C0EBF0F52A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{595D5745-89AC-459B-91BD-C0EBF0F52A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{595D5745-89AC-459B-91BD-C0EBF0F52A22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7795A25C-B909-42A7-8984-6EB45045F45C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7795A25C-B909-42A7-8984-6EB45045F45C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7795A25C-B909-42A7-8984-6EB45045F45C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7795A25C-B909-42A7-8984-6EB45045F45C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

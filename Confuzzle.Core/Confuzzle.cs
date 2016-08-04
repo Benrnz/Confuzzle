@@ -33,6 +33,7 @@ namespace ConfuzzleCore
         /// <param name="password">The password to decrypt the file.</param>
         public static async Task SimpleDecryptWithPasswordAsync(string inputFileName, string outputFileName, string password)
         {
+            if (password == null) throw new ArgumentNullException(nameof(password));
             await DecryptFile(inputFileName, outputFileName, () => password);
         }
 
@@ -45,6 +46,7 @@ namespace ConfuzzleCore
         /// <param name="password">The password to decrypt the file.</param>
         public static async Task<string> SimpleDecryptWithPasswordAsync(string inputData, string password)
         {
+            if (password == null) throw new ArgumentNullException(nameof(password));
             return await DecryptString(inputData, () => password);
         }
 
@@ -81,6 +83,7 @@ namespace ConfuzzleCore
         /// <param name="password">The password to encrypt the file.</param>
         public static async Task SimpleEncryptWithPasswordAsync(string inputFileName, string outputFileName, string password)
         {
+            if (password == null) throw new ArgumentNullException(nameof(password));
             await EncryptFile(inputFileName, outputFileName, () => password);
         }
 
@@ -93,6 +96,7 @@ namespace ConfuzzleCore
         /// <param name="password">The password to encrypt the file.</param>
         public static async Task<string> SimpleEncryptWithPasswordAsync(string inputData, string password)
         {
+            if (password == null) throw new ArgumentNullException(nameof(password));
             return await EncryptString(inputData, () => password);
         }
 
@@ -108,12 +112,13 @@ namespace ConfuzzleCore
             return await EncryptString(inputData, () => SecureStringToString(password));
         }
 
-        internal static string SecureStringToString(SecureString value)
+        internal static string SecureStringToString(SecureString password)
         {
+            if (password == null) throw new ArgumentNullException(nameof(password));
             var valuePtr = IntPtr.Zero;
             try
             {
-                valuePtr = Marshal.SecureStringToGlobalAllocUnicode(value);
+                valuePtr = Marshal.SecureStringToGlobalAllocUnicode(password);
                 return Marshal.PtrToStringUni(valuePtr);
             }
             finally
@@ -124,6 +129,8 @@ namespace ConfuzzleCore
 
         private static async Task DecryptFile(string inputFileName, string outputFileName, Func<string> getPassword)
         {
+            if (inputFileName == null) throw new ArgumentNullException(nameof(inputFileName));
+            if (outputFileName == null) throw new ArgumentNullException(nameof(outputFileName));
             using (var inputStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 using (var outputStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
@@ -138,6 +145,7 @@ namespace ConfuzzleCore
 
         private static async Task<string> DecryptString(string inputData, Func<string> getPassword)
         {
+            if (inputData == null) throw new ArgumentNullException(nameof(inputData));
             using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(inputData)))
             {
                 using (var outputStream = new MemoryStream())
@@ -158,6 +166,8 @@ namespace ConfuzzleCore
 
         private static async Task EncryptFile(string inputFileName, string outputFileName, Func<string> getPassword)
         {
+            if (inputFileName == null) throw new ArgumentNullException(nameof(inputFileName));
+            if (outputFileName == null) throw new ArgumentNullException(nameof(outputFileName));
             using (var inputStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 using (var outputStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
@@ -172,6 +182,7 @@ namespace ConfuzzleCore
 
         private static async Task<string> EncryptString(string inputData, Func<string> getPassword)
         {
+            if (inputData == null) throw new ArgumentNullException(nameof(inputData));
             using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(inputData)))
             {
                 using (var outputStream = new MemoryStream())
