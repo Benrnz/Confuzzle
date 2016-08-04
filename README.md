@@ -27,26 +27,34 @@ New contributions are welcome.
 
 ## C# Examples using Confuzzle.Core
 For C# usage you will only need the Confuzzle.Core.dll.
-### Encrypt a file into another file asynchronously 
+### Encrypt a file into another file.
 ```
-await Confuzzle.SimpleEncryptWithPasswordAsync("C:\\PathToMyFile\\Myfile.txt", "C:\\PathToMyFile\\Myfile.txt.secure", "MySecretSquirrelPassword");
-```
-
-### Decrypt a file into another file asynchronously
-```
-await Confuzzle.SimpleDecryptWithPasswordAsync("C:\\PathToMyFile\\Myfile.txt.secure", "C:\\PathToMyFile\\Myfile.txt", "MySecretSquirrelPassword");
+await Confuzzle.EncryptFile("C:\\PathToMyFile\\Myfile.txt")
+    .WithPassword("MySecretSquirrelPassword")
+    .IntoFile("C:\\PathToMyFile\\Myfile.txt.secure");
 ```
 
-### Encrypt a string asynchronously 
+### Decrypt a file into another file.
 ```
-byte[] bytes = await Confuzzle.SimpleEncryptWithPasswordAsync("This is the string I want to encrypt", "MySecretSquirrelPassword");
+await Confuzzle.DecryptFile("C:\\PathToMyFile\\Myfile.txt.secure")
+    .WithPassword("MySecretSquirrelPassword")
+    .IntoFile("C:\\PathToMyFile\\Myfile.txt");
+```
+
+### Encrypt a string.
+```
+byte[] bytes = await Confuzzle.EncryptString("This is the string I want to encrypt")
+    .WithPassword("MySecretSquirrelPassword")
+    .IntoByteArray();
 var base64 = Convert.ToBase64String(bytes);
 ```
 
-### Decrypt a string asynchronously
+### Decrypt a string.
 ```
-var bytes = Convert.FromBase64String(base64);
-string result = await Confuzzle.SimpleDecryptWithPasswordAsync(bytes, "MySecretSquirrelPassword");
+var bytes2 = Convert.FromBase64String(base64);
+string result = await Confuzzle.DecryptBytes(bytes2)
+    .WithPassword("MySecretSquirrelPassword")
+    .IntoString();
 ```
 
 ### Synchronous Operations
@@ -71,21 +79,21 @@ using (var inputStream = new FileStream(unencryptedInputFileName, FileMode.Open,
 }
 ```
 
-To encrypt a string synchronously
+To encrypt a file synchronously
 ```
-using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(inputData)))
+using (var inputStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
 {
-    using (var outputStream = new MemoryStream())
+    using (var outputStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
     {
         using (var cryptoStream = CipherStream.Create(outputStream, getPassword()))
         {
             inputStream.CopyTo(cryptoStream);
         }
-
-        outputStream.Position = 0;
-        return outputStream.ToArray();
     }
 }
+
+// To encrypt a string replace the inputStream with a MemoryStream containing the string.
+// To encrypt into a byte array replace the outputStream with a MemoryStream and read the bytes with .ToArray().
 ``` 
 
 ## Command Line Examples
