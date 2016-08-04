@@ -16,13 +16,13 @@
   </metadata>
   <files>
       <file src="Confuzzle\bin\Release\Confuzzle.exe" target="lib\net46" />
-      <file src="Confuzzle\bin\Release\Confuzzle.Core.dll" target="lib\net46" />
-      <file src="Confuzzle\bin\Release\Confuzzle.Core.pdb" target="lib\net46" />
-      <file src="Confuzzle\bin\Release\Confuzzle.Core.xml" target="lib\net46" />
+      <file src="Confuzzle\bin\Release\ConfuzzleCore.dll" target="lib\net46" />
+      <file src="Confuzzle\bin\Release\ConfuzzleCore.pdb" target="lib\net46" />
+      <file src="Confuzzle\bin\Release\ConfuzzleCore.xml" target="lib\net46" />
       <file src="Confuzzle\bin\Release\Confuzzle.exe" target="lib\net461" />
-      <file src="Confuzzle\bin\Release\Confuzzle.Core.dll" target="lib\net461" />
-      <file src="Confuzzle\bin\Release\Confuzzle.Core.pdb" target="lib\net461" />
-      <file src="Confuzzle\bin\Release\Confuzzle.Core.xml" target="lib\net461" />
+      <file src="Confuzzle\bin\Release\ConfuzzleCore.dll" target="lib\net461" />
+      <file src="Confuzzle\bin\Release\ConfuzzleCore.pdb" target="lib\net461" />
+      <file src="Confuzzle\bin\Release\ConfuzzleCore.xml" target="lib\net461" />
   </files>
 
 </package>
