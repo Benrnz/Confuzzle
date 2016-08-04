@@ -44,7 +44,7 @@ namespace ConfuzzleCore
         /// </summary>
         /// <param name="inputData">The string to decrypt</param>
         /// <param name="password">The password to decrypt the file.</param>
-        public static async Task<string> SimpleDecryptWithPasswordAsync(string inputData, string password)
+        public static async Task<string> SimpleDecryptWithPasswordAsync(byte[] inputData, string password)
         {
             if (password == null) throw new ArgumentNullException(nameof(password));
             return await DecryptString(inputData, () => password);
@@ -57,7 +57,7 @@ namespace ConfuzzleCore
         /// </summary>
         /// <param name="inputData">The string to decrypt</param>
         /// <param name="password">The password to decrypt the file.</param>
-        public static async Task<string> SimpleDecryptWithPasswordAsync(string inputData, SecureString password)
+        public static async Task<string> SimpleDecryptWithPasswordAsync(byte[] inputData, SecureString password)
         {
             return await DecryptString(inputData, () => SecureStringToString(password));
         }
@@ -94,7 +94,7 @@ namespace ConfuzzleCore
         /// </summary>
         /// <param name="inputData">The string to encrypt.</param>
         /// <param name="password">The password to encrypt the file.</param>
-        public static async Task<string> SimpleEncryptWithPasswordAsync(string inputData, string password)
+        public static async Task<byte[]> SimpleEncryptWithPasswordAsync(string inputData, string password)
         {
             if (password == null) throw new ArgumentNullException(nameof(password));
             return await EncryptString(inputData, () => password);
@@ -107,7 +107,7 @@ namespace ConfuzzleCore
         /// </summary>
         /// <param name="inputData">The string to encrypt.</param>
         /// <param name="password">The password to encrypt the file.</param>
-        public static async Task<string> SimpleEncryptWithPasswordAsync(string inputData, SecureString password)
+        public static async Task<byte[]> SimpleEncryptWithPasswordAsync(string inputData, SecureString password)
         {
             return await EncryptString(inputData, () => SecureStringToString(password));
         }
@@ -143,10 +143,10 @@ namespace ConfuzzleCore
             }
         }
 
-        private static async Task<string> DecryptString(string inputData, Func<string> getPassword)
+        private static async Task<string> DecryptString(byte[] inputData, Func<string> getPassword)
         {
             if (inputData == null) throw new ArgumentNullException(nameof(inputData));
-            using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(inputData)))
+            using (var inputStream = new MemoryStream(inputData))
             {
                 using (var outputStream = new MemoryStream())
                 {
@@ -180,7 +180,7 @@ namespace ConfuzzleCore
             }
         }
 
-        private static async Task<string> EncryptString(string inputData, Func<string> getPassword)
+        private static async Task<byte[]> EncryptString(string inputData, Func<string> getPassword)
         {
             if (inputData == null) throw new ArgumentNullException(nameof(inputData));
             using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(inputData)))
@@ -193,10 +193,7 @@ namespace ConfuzzleCore
                     }
 
                     outputStream.Position = 0;
-                    using (var reader = new StreamReader(outputStream))
-                    {
-                        return await reader.ReadToEndAsync();
-                    }
+                    return outputStream.ToArray();
                 }
             }
         }
