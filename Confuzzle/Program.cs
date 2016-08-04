@@ -13,6 +13,7 @@ namespace Confuzzle
         public static void Main(string[] args)
         {
             Console.WriteLine("Confuzzle - File encryption - Rees.biz");
+            Console.WriteLine("Version " + GetVersion());
 
             var options = new Options();
             if (Parser.Default.ParseArguments(args, options) && ValidateArgs(options))
@@ -50,15 +51,18 @@ namespace Confuzzle
             {
                 Console.WriteLine("Error - invalid arguments.");
             }
-
-            if (!options.Silent)
-            {
-                Console.WriteLine("Press enter to exit");
-                Console.ReadLine();
-            }
         }
 
-        private static bool SetPassword(Options options)
+        private static string GetVersion()
+        {
+            var assembly = typeof(Program).Assembly;
+            var versionInfo = assembly.GetName().Version;
+            var file = new FileInfo(assembly.Location);
+            var fileDate = file.Exists ? file.CreationTime.ToShortDateString() : string.Empty;
+            return $"{versionInfo.Major}.{versionInfo.Minor}.{versionInfo.Build} {fileDate}";
+        }
+
+        private static bool SetPassword(Options options, bool confirm = true)
         {
             Console.WriteLine();
             if (options.Silent)
@@ -70,13 +74,16 @@ namespace Confuzzle
             Console.WriteLine("Enter password: ");
             var pass = PromptUserForPassword();
             password = pass;
-            Console.WriteLine("\nConfirm password: ");
-            pass = PromptUserForPassword();
-            Console.WriteLine();
-            if (string.Compare(password, pass, StringComparison.Ordinal) != 0)
+            if (confirm)
             {
-                Console.WriteLine("Passwords do not match.");
-                throw new UserAbortException();
+                Console.WriteLine("\nConfirm password: ");
+                pass = PromptUserForPassword();
+                Console.WriteLine();
+                if (string.Compare(password, pass, StringComparison.Ordinal) != 0)
+                {
+                    Console.WriteLine("Passwords do not match.");
+                    throw new UserAbortException();
+                }
             }
 
             if (string.IsNullOrWhiteSpace(password))
@@ -121,13 +128,18 @@ namespace Confuzzle
             InitialiseOutputFile(options);
 
             var stopwatch = Stopwatch.StartNew();
-            using (var inputFile = File.Open(options.InputFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+            var unencryptedInputFileName = options.InputFile;
+            var encryptedOutputFileName = options.OutputFile;
+            using (var inputStream = File.Open(unencryptedInputFileName, FileMode.Open, FileAccess.Read, FileShare.Read)
+                )
             {
-                using (var outputFile = File.Open(options.OutputFile, FileMode.Create, FileAccess.Write, FileShare.Read))
+                using (
+                    var outputStream = File.Open(encryptedOutputFileName, FileMode.Create, FileAccess.Write,
+                        FileShare.Read))
                 {
-                    using (var cryptoStream = CipherStream.Create(outputFile, password))
+                    using (var cryptoStream = CipherStream.Create(outputStream, password))
                     {
-                        inputFile.CopyTo(cryptoStream);
+                        inputStream.CopyTo(cryptoStream);
                     }
                 }
             }
@@ -158,17 +170,22 @@ namespace Confuzzle
         private static void Decrypt(Options options)
         {
             Console.WriteLine("Decrypt Mode");
-            if (!SetPassword(options)) return;
+            if (!SetPassword(options, false)) return;
             InitialiseOutputFile(options);
 
             var stopwatch = Stopwatch.StartNew();
-            using (var inputFile = File.Open(options.InputFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+
+            var encryptedInputFileName = options.InputFile;
+            var decryptedOutputFileName = options.OutputFile;
+            using (var inputStream = File.Open(encryptedInputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                using (var outputFile = File.Open(options.OutputFile, FileMode.Create, FileAccess.Write, FileShare.Read))
+                using (
+                    var outputStream = File.Open(decryptedOutputFileName, FileMode.Create, FileAccess.Write,
+                        FileShare.Read))
                 {
-                    using (var cryptoStream = CipherStream.Open(inputFile, password))
+                    using (var cryptoStream = CipherStream.Open(inputStream, password))
                     {
-                        cryptoStream.CopyTo(outputFile);
+                        cryptoStream.CopyTo(outputStream);
                     }
                 }
             }
