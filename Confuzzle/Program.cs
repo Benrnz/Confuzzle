@@ -131,7 +131,7 @@ namespace ConfuzzleCommandLine
             var stopwatch = Stopwatch.StartNew();
             var unencryptedInputFileName = options.InputFile;
             var encryptedOutputFileName = options.OutputFile;
-            await Confuzzle.SimpleEncryptWithPasswordAsync(unencryptedInputFileName, encryptedOutputFileName, password);
+            await Confuzzle.EncryptFileIntoNewFileAsync(unencryptedInputFileName, encryptedOutputFileName, password);
             Console.WriteLine($"Encryption complete. {stopwatch.ElapsedMilliseconds:N}\b\b\bms ");
 
             if (File.Exists(options.OutputFile))
@@ -166,7 +166,7 @@ namespace ConfuzzleCommandLine
 
             var encryptedInputFileName = options.InputFile;
             var decryptedOutputFileName = options.OutputFile;
-            await Confuzzle.SimpleDecryptWithPasswordAsync(encryptedInputFileName, decryptedOutputFileName, password);
+            await Confuzzle.DecryptFromFileIntoNewFileAsync(encryptedInputFileName, decryptedOutputFileName, password);
 
             Console.WriteLine($"Decryption complete. {stopwatch.ElapsedMilliseconds:N}\b\b\bms ");
 

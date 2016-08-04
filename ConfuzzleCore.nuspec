@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>ConfuzzleCore</id>
-	  <title>ConfuzzleCore (DLL only)</title>
+    <id>Confuzzle.Core</id>
+	  <title>Confuzzle.Core (DLL only)</title>
     <version>1.0</version>
     <authors>Ben Rees (Benrnz)</authors>
     <owners>Benrnz,Nzgeek</owners>
