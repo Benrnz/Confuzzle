@@ -52,6 +52,8 @@ namespace ConfuzzleCommandLine
             {
                 Console.WriteLine("Error - invalid arguments.");
             }
+
+            Console.WriteLine();
         }
 
         private static async Task Decrypt(Options options)
@@ -188,7 +190,7 @@ namespace ConfuzzleCommandLine
             valid = File.Exists(options.InputFile);
             if (!valid)
             {
-                Console.WriteLine("Input file does not exist.");
+                Console.WriteLine("Input file does not exist. " + options.InputFile);
                 return false;
             }
 
