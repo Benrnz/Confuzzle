@@ -181,8 +181,7 @@ namespace ConfuzzleCommandLine
             var valid = options.Decrypt ^ options.Encrypt;
             if (!valid)
             {
-                Console.WriteLine(
-                    "Only one of the Encrypt or Decrypt command line options can be in the same command line.");
+                Console.WriteLine("Only one of the Encrypt or Decrypt command line options can be in the same command line.");
                 return false;
             }
 
@@ -202,8 +201,7 @@ namespace ConfuzzleCommandLine
 
             if (options.Silent && string.IsNullOrWhiteSpace(options.Password))
             {
-                Console.WriteLine(
-                    "No password has been supplied and Silent mode is active. Password is required when running without user interaction.");
+                Console.WriteLine("No password has been supplied and Silent mode is active. Password is required when running without user interaction.");
                 return false;
             }
 
