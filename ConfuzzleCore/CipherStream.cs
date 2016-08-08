@@ -23,7 +23,7 @@ namespace ConfuzzleCore
         /// </summary>
         private const int HeaderOverhead = 2 * sizeof(ushort);
 
-        private readonly Stream stream;
+        private Stream stream;
         private CtrModeTransform ctrTransform;
         private long position;
         private long startPosition;
@@ -59,7 +59,16 @@ namespace ConfuzzleCore
         /// </summary>
         public override bool CanRead
         {
-            get { return this.stream.CanRead; }
+            get
+            {
+                OutputStreamDisposed();
+                return this.stream.CanRead;
+            }
+        }
+
+        private void OutputStreamDisposed()
+        {
+            if (this.stream == null) throw new ObjectDisposedException("Underlying output stream has been disposed.");
         }
 
         /// <summary>
@@ -67,7 +76,10 @@ namespace ConfuzzleCore
         /// </summary>
         public override bool CanSeek
         {
-            get { return this.stream.CanSeek; }
+            get
+            {
+                OutputStreamDisposed();
+                return this.stream.CanSeek; }
         }
 
         /// <summary>
@@ -75,7 +87,10 @@ namespace ConfuzzleCore
         /// </summary>
         public override bool CanTimeout
         {
-            get { return this.stream.CanTimeout; }
+            get
+            {
+                OutputStreamDisposed();
+                return this.stream.CanTimeout; }
         }
 
         /// <summary>
@@ -83,7 +98,10 @@ namespace ConfuzzleCore
         /// </summary>
         public override bool CanWrite
         {
-            get { return this.stream.CanWrite; }
+            get
+            {
+                OutputStreamDisposed();
+                return this.stream.CanWrite; }
         }
 
         /// <summary>
@@ -104,7 +122,10 @@ namespace ConfuzzleCore
         /// </remarks>
         public override long Length
         {
-            get { return this.stream.Length - this.startPosition; }
+            get
+            {
+                OutputStreamDisposed();
+                return this.stream.Length - this.startPosition; }
         }
 
         /// <summary>
@@ -138,7 +159,10 @@ namespace ConfuzzleCore
         /// </remarks>
         public override long Position
         {
-            get { return this.position; }
+            get
+            {
+                OutputStreamDisposed();
+                return this.position; }
             set { Seek(value, SeekOrigin.Begin); }
         }
 
@@ -163,9 +187,10 @@ namespace ConfuzzleCore
         /// <returns>
         ///     A <see cref="CipherStream" /> ready to encrypt data.
         /// </returns>
-        public static CipherStream Create(Stream stream, KeyStretcher key, ICipherFactory cipherFactory = null,
-            byte[] nonce = null)
+        public static CipherStream Create(Stream stream, KeyStretcher key, ICipherFactory cipherFactory = null, byte[] nonce = null)
         {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (key == null) throw new ArgumentNullException(nameof(key));
             var ctrStream = new CipherStream(stream, key, cipherFactory);
             ctrStream.SetupParameters(nonce);
             return ctrStream;
@@ -193,6 +218,8 @@ namespace ConfuzzleCore
         /// </returns>
         public static CipherStream Create(Stream stream, string password, ICipherFactory cipherFactory = null, byte[] nonce = null, byte[] salt = null)
         {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
             var key = new KeyStretcher(password, salt);
             var ctrStream = new CipherStream(stream, key, cipherFactory);
             ctrStream.SetupParameters(nonce);
@@ -204,6 +231,7 @@ namespace ConfuzzleCore
         /// </summary>
         public override void Flush()
         {
+            OutputStreamDisposed();
             this.stream.Flush();
         }
 
@@ -268,6 +296,7 @@ namespace ConfuzzleCore
         /// </returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
+            OutputStreamDisposed();
             // Read data into the buffer.
             var sizeRead = this.stream.Read(buffer, offset, count);
 
@@ -294,6 +323,7 @@ namespace ConfuzzleCore
         /// </remarks>
         public override long Seek(long offset, SeekOrigin origin)
         {
+            OutputStreamDisposed();
             if (!this.stream.CanSeek)
                 throw new NotSupportedException("Stream is not seekable.");
 
@@ -330,6 +360,7 @@ namespace ConfuzzleCore
         /// </remarks>
         public override void SetLength(long value)
         {
+            OutputStreamDisposed();
             this.stream.SetLength(this.startPosition + value);
         }
 
@@ -351,6 +382,7 @@ namespace ConfuzzleCore
         /// <param name="count">The number of bytes to be written to the current stream.</param>
         public override void Write(byte[] buffer, int offset, int count)
         {
+            OutputStreamDisposed();
             // Copy the data so that the original values are not modified.
             var writeBuffer = new byte[count];
             Array.Copy(buffer, offset, writeBuffer, 0, count);
@@ -379,6 +411,12 @@ namespace ConfuzzleCore
                 {
                     this.ctrTransform.Dispose();
                     this.ctrTransform = null;
+                }
+
+                if (this.stream != null)
+                {
+                    this.stream.Dispose();
+                    this.stream = null;
                 }
             }
         }
