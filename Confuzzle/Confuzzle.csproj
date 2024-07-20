@@ -14,7 +14,15 @@
     <Description>Do you find encryption hard? How about doing it in a best practice fashion? Good, so do I, that's why we've spent some time finding a good practice way of doing it, and wrapping it in an easy to use package. The idea behind Confuzzle is to provide a few really simple methods of encrypting text files and streams. This package includes a DLL and a console runner.</Description>
     <Copyright>2024 Rees.biz</Copyright>
     <PackageTags>Encryption</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
