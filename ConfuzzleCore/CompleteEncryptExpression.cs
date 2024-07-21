@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace ConfuzzleCore
+﻿namespace ConfuzzleCore
 {
     /// <summary>
     ///     A fluent syntax class that shows the user the next required step is to select the output destination.

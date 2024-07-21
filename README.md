@@ -1,11 +1,7 @@
-[![benrnz MyGet Build Status](https://www.myget.org/BuildSource/Badge/benrnz?identifier=13def666-1450-4a0c-adf6-2b3008a08094)](https://www.myget.org/)
-
-Nuget: [Install-Package Confuzzle.Core](https://www.nuget.org/packages/Confuzzle.Core/)
-
-Nuget: [Install-Package Confuzzle Commandline](https://www.nuget.org/packages/Confuzzle/)
+Nuget: [Install-Package Confuzzle](https://www.nuget.org/packages/Confuzzle/)
 
 # Confuzzle
-Do you find encryption hard? How about doing it in a best practice fashion?  Good, so do I, that's why we've spent some time researching a best practice way of doing it, and wrapping it in an easy to use package. The idea behind Confuzzle is to provide a few really simple methods of encrypting text files and streams.
+Do you find encryption hard? How about doing it in a best practice fashion?  Good, so do I, that's why we've spent some time researching a good way of doing it, and wrapping it in an easy to use package. The idea behind Confuzzle is to provide a few really simple methods of encrypting text files and streams.
 Confuzzle command line is a handy and terse utility to encrypt and decrypt text files with a simple password. The longer your password the more difficult it will be to decrypt.
 Confuzzle also contains a .NET class library for use in your code. The API is intended to provide simple methods based on strings or streams.
 
