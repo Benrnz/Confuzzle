@@ -8,13 +8,15 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>Confuzzle</PackageId>
     <Title>Confuzzle, encryption made easier</Title>
-    <Version>3.0.0</Version>
+    <Version>3.0.1</Version>
     <Authors>Ben Rees; Jamie Anderson</Authors>
     <Company>Rees.biz</Company>
     <Description>Do you find encryption hard? How about doing it in a best practice fashion? Good, so do I, that's why we've spent some time finding a good practice way of doing it, and wrapping it in an easy to use package. The idea behind Confuzzle is to provide a few really simple methods of encrypting text files and streams. This package includes a DLL and a console runner.</Description>
     <Copyright>2024 Rees.biz</Copyright>
     <PackageTags>Encryption</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/Benrnz/Confuzzle</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Benrnz/Confuzzle</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
