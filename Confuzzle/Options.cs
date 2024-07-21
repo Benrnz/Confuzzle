@@ -7,17 +7,14 @@ namespace ConfuzzleCommandLine
 {
     public class Options
     {
-        [Option('d', "decrypt", DefaultValue = false, HelpText = "Decrypt mode - decrypts the supplied Input File.")]
+        [Option('d', "decrypt", HelpText = "Decrypt mode - decrypts the supplied Input File.")]
         public bool Decrypt { get; set; }
 
-        [Option('e', "encrypt", DefaultValue = false, HelpText = "Encrypt mode - encrypts the supplied Input File.")]
+        [Option('e', "encrypt", HelpText = "Encrypt mode - encrypts the supplied Input File.")]
         public bool Encrypt { get; set; }
 
         [Option('i', "inputFileName", Required = true, HelpText = "Input file to be processed.")]
         public string InputFile { get; set; }
-
-        [ParserState]
-        public IParserState LastParserState { get; set; }
 
         [Option('o', "outputFile", HelpText = "The file to output to.")]
         public string OutputFile { get; set; }
@@ -27,11 +24,5 @@ namespace ConfuzzleCommandLine
 
         [Option('s', "silent", HelpText = "Silent mode. Will not prompt for password or confirmation.")]
         public bool Silent { get; set; }
-
-        [HelpOption]
-        public string GetUsage()
-        {
-            return HelpText.AutoBuild(this, current => HelpText.DefaultParsingErrorsHandler(this, current));
-        }
     }
 }

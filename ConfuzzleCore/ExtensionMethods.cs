@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace ConfuzzleCore
+﻿namespace ConfuzzleCore
 {
     internal static class ExtensionMethods
     {
