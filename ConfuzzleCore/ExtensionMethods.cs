@@ -16,8 +16,15 @@
         /// </remarks>
         public static void Fill<T>(this T[] array, IEnumerable<T> fillValues)
         {
-            if (array == null) throw new ArgumentNullException(nameof(array));
-            if (fillValues == null) throw new ArgumentNullException(nameof(fillValues));
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (fillValues == null)
+            {
+                throw new ArgumentNullException(nameof(fillValues));
+            }
 
             var count = 0;
             foreach (var fillValue in fillValues)
@@ -25,7 +32,9 @@
                 array[count++] = fillValue;
 
                 if (count >= array.Length)
+                {
                     return;
+                }
             }
 
             for (var offset = count; offset < array.Length; offset += count)
@@ -43,13 +52,18 @@
         /// <returns>A byte array containing the read data.</returns>
         public static byte[] ReadExact(this Stream stream, int length)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
 
             var value = new byte[length];
             var sizeRead = stream.Read(value, 0, length);
 
             if (sizeRead != length)
+            {
                 throw new InvalidDataException($"Unable to read {length} bytes.");
+            }
 
             return value;
         }
@@ -60,11 +74,16 @@
         /// <param name="stream">The stream to read from.</param>
         public static ushort ReadUShort(this Stream stream)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
 
             var valueBytes = ReadExact(stream, sizeof(ushort));
             if (BitConverter.IsLittleEndian)
+            {
                 Array.Reverse(valueBytes);
+            }
 
             return BitConverter.ToUInt16(valueBytes, 0);
         }
@@ -76,10 +95,15 @@
         /// <param name="value">The bytes to write.</param>
         public static void Write(this Stream stream, byte[] value)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
 
             if (value != null)
+            {
                 stream.Write(value, 0, value.Length);
+            }
         }
 
         /// <summary>
@@ -89,11 +113,16 @@
         /// <param name="value">The value to write.</param>
         public static void WriteUShort(this Stream stream, ushort value)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
 
             var valueBytes = BitConverter.GetBytes(value);
             if (BitConverter.IsLittleEndian)
+            {
                 Array.Reverse(valueBytes);
+            }
 
             Write(stream, valueBytes);
         }

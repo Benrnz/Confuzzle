@@ -110,7 +110,9 @@ namespace ConfuzzleCore
         public static byte[] GenerateSalt(int saltLength)
         {
             if (saltLength < 8)
+            {
                 throw new ArgumentException("The specified salt size is smaller than 8 bytes.", nameof(saltLength));
+            }
 
             var salt = new byte[saltLength];
             Rng.GetBytes(salt);
@@ -125,7 +127,9 @@ namespace ConfuzzleCore
         public byte[] GetKeyBytes(int keySizeBits)
         {
             if (keySizeBits % 8 != 0)
+            {
                 throw new ArgumentException("Key size must be a multiple of 8 bits.", nameof(keySizeBits));
+            }
 
             return GetBytes(keySizeBits / 8);
         }
@@ -153,7 +157,9 @@ namespace ConfuzzleCore
                 .Max();
 
             if (maxLegalSize == 0)
+            {
                 throw new ArgumentException("Maximum key size is too low.", nameof(maxKeySizeBits));
+            }
 
             return GetKeyBytes(maxLegalSize);
         }
@@ -169,7 +175,9 @@ namespace ConfuzzleCore
             for (var keySize = keySizes.MaxSize; keySize >= keySizes.MinSize; keySize -= keySizes.SkipSize)
             {
                 if (keySize <= maxKeySizeBits)
+                {
                     return keySize;
+                }
             }
 
             return 0;

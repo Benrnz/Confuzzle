@@ -4,7 +4,9 @@ using CommandLine;
 using ConfuzzleCommandLine;
 
 if (args.Length == 0)
+{
     args = new[] { "--help" };
+}
 
 Console.WriteLine("Confuzzle - File encryption - Rees.biz");
 Console.WriteLine("Version " + ProgramMain.GetVersion());
@@ -12,7 +14,7 @@ Console.WriteLine("Version " + ProgramMain.GetVersion());
 Parser.Default.ParseArguments<Options>(args)
     .WithParsed(options =>
     {
-        if (ProgramMain.ValidateArgs(options)) 
+        if (ProgramMain.ValidateArgs(options))
         {
             // Values are available here
             Console.WriteLine($"File Name: {options.InputFile}");

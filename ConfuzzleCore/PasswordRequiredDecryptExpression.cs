@@ -22,7 +22,11 @@ namespace ConfuzzleCore
         /// </summary>
         public CompleteDecryptExpression WithPassword(string password)
         {
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new ArgumentNullException(nameof(password));
+            }
+
             Password = password;
             return new CompleteDecryptExpression(this);
         }
@@ -33,8 +37,7 @@ namespace ConfuzzleCore
         /// </summary>
         public CompleteDecryptExpression WithPassword(SecureString password)
         {
-            if (password == null) throw new ArgumentNullException(nameof(password));
-            SecurePassword = password;
+            SecurePassword = password ?? throw new ArgumentNullException(nameof(password));
             return new CompleteDecryptExpression(this);
         }
 

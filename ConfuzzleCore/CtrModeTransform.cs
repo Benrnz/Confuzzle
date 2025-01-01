@@ -38,9 +38,7 @@ namespace ConfuzzleCore
 
         public CtrModeTransform(CipherStream stream)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
-
-            this.stream = stream;
+            this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
 
             this.blockLength = this.stream.BlockLength;
             this.blocksPerTransform = PreferredTransformLength / this.blockLength;
@@ -65,7 +63,10 @@ namespace ConfuzzleCore
         /// <param name="length">The length of data to be transformed.</param>
         public void Transform(long fromPosition, byte[] data, int offset, int length)
         {
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
 
             while (length > 0)
             {
@@ -73,12 +74,14 @@ namespace ConfuzzleCore
                 PrepareTransform(fromPosition);
 
                 // Calculate where in the CTR transformation to start and how much can be processed.
-                var xorIndex = (int) (fromPosition % this.ctrTransformLength);
+                var xorIndex = (int)(fromPosition % this.ctrTransformLength);
                 var xorCount = Math.Min(this.ctrTransformLength - xorIndex, length);
 
                 // Do the XOR transformation based on the CTR transformation block.
                 for (var index = 0; index < xorCount; ++index)
+                {
                     data[offset + index] ^= this.ctrTransform[xorIndex + index];
+                }
 
                 // Update the count and offsets based on the amount of data copied this round.
                 fromPosition += xorCount;
@@ -154,7 +157,7 @@ namespace ConfuzzleCore
                 --offset)
             {
                 // The least significant byte of the block number.
-                var blockNumberByte = (byte) (blockNumber & 0xFF);
+                var blockNumberByte = (byte)(blockNumber & 0xFF);
                 blockNumber >>= 8;
 
                 // XOR the counter byte value into the block.
@@ -202,15 +205,21 @@ namespace ConfuzzleCore
         private void PrepareTransform(long fromPosition)
         {
             if (fromPosition < 0)
+            {
                 throw new ArgumentException("Stream position cannot be less than 0.", nameof(fromPosition));
+            }
 
             if (this.cryptoTransform == null)
+            {
                 Initialize();
+            }
 
             // Get the block number for the position. If it's within the current range, there's nothing to do.
             var blockNumber = fromPosition / this.blockLength;
             if (blockNumber <= this.startBlock && blockNumber < this.endBlock)
+            {
                 return;
+            }
 
             // Calculate the start and end block indices for the transform.
             var currentStartBlock = blockNumber / this.blocksPerTransform * this.blocksPerTransform;

@@ -5,19 +5,23 @@ namespace ConfuzzleCommandLine
 {
     public static class ProgramMain
     {
-        private static string password;
+        private static string Password = string.Empty;
 
         internal static async Task Decrypt(Options options)
         {
             Console.WriteLine("Decrypt Mode");
-            if (!SetPassword(options, false)) return;
+            if (!SetPassword(options, false))
+            {
+                return;
+            }
+
             InitialiseOutputFile(options);
 
             var stopwatch = Stopwatch.StartNew();
 
             var encryptedInputFileName = options.InputFile;
             var decryptedOutputFileName = options.OutputFile;
-            await Confuzzle.DecryptFile(encryptedInputFileName).WithPassword(password).IntoFile(decryptedOutputFileName);
+            await Confuzzle.DecryptFile(encryptedInputFileName).WithPassword(Password).IntoFile(decryptedOutputFileName);
 
             Console.WriteLine($"Decryption complete. {stopwatch.ElapsedMilliseconds:N}\b\b\bms ");
 
@@ -30,13 +34,17 @@ namespace ConfuzzleCommandLine
         internal static async Task Encrypt(Options options)
         {
             Console.WriteLine("Encrypt Mode");
-            if (!SetPassword(options)) return;
+            if (!SetPassword(options))
+            {
+                return;
+            }
+
             InitialiseOutputFile(options);
 
             var stopwatch = Stopwatch.StartNew();
             var unencryptedInputFileName = options.InputFile;
             var encryptedOutputFileName = options.OutputFile;
-            await Confuzzle.EncryptFile(unencryptedInputFileName).WithPassword(password).IntoFile(encryptedOutputFileName);
+            await Confuzzle.EncryptFile(unencryptedInputFileName).WithPassword(Password).IntoFile(encryptedOutputFileName);
             Console.WriteLine($"Encryption complete. {stopwatch.ElapsedMilliseconds:N}\b\b\bms ");
 
             if (File.Exists(options.OutputFile))
@@ -51,7 +59,7 @@ namespace ConfuzzleCommandLine
             var versionInfo = assembly.GetName().Version;
             var file = new FileInfo(assembly.Location);
             var fileDate = file.Exists ? file.CreationTime.ToShortDateString() : string.Empty;
-            return $"{versionInfo.Major}.{versionInfo.Minor}.{versionInfo.Build} {fileDate}";
+            return $"{versionInfo?.Major}.{versionInfo?.Minor}.{versionInfo?.Build} {fileDate}";
         }
 
         internal static void InitialiseOutputFile(Options options)
@@ -64,7 +72,10 @@ namespace ConfuzzleCommandLine
                     Console.Write("Confirm [Y/N]: ");
                     var key = Console.ReadKey();
                     Console.WriteLine();
-                    if (key.Key == ConsoleKey.N) throw new UserAbortException();
+                    if (key.Key == ConsoleKey.N)
+                    {
+                        throw new UserAbortException();
+                    }
                 }
                 File.Delete(options.OutputFile);
             }
@@ -101,26 +112,26 @@ namespace ConfuzzleCommandLine
             Console.WriteLine();
             if (options.Silent)
             {
-                password = options.Password;
+                Password = options.Password;
                 return true;
             }
 
             Console.WriteLine("Enter password: ");
             var pass = PromptUserForPassword();
-            password = pass;
+            Password = pass;
             if (confirm)
             {
                 Console.WriteLine("\nConfirm password: ");
                 pass = PromptUserForPassword();
                 Console.WriteLine();
-                if (string.Compare(password, pass, StringComparison.Ordinal) != 0)
+                if (string.Compare(Password, pass, StringComparison.Ordinal) != 0)
                 {
                     Console.WriteLine("Passwords do not match.");
                     throw new UserAbortException();
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(Password))
             {
                 Console.WriteLine("Invalid Password - Passwords cannot be blank");
                 return false;
