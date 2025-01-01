@@ -1,0 +1,47 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Build
+
+on:
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+    # Configure EOL setting is necessary to run the build on Linux.
+    - name: Configure EOL settings
+      run: |
+        git config --global core.autocrlf true
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Cache .Net packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.nuget/packages
+          ~/.local/share/NuGet/Cache
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/obj/project.assets.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Format
+      run: dotnet format --no-restore --verbosity minimal --verify-no-changes
