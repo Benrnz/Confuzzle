@@ -35,14 +35,16 @@ namespace ConfuzzleCore
         ///     A factory for creating cryptographic algorithms. If <c>null</c> is provided, a default factory will be
         ///     used.
         /// </param>
-        private CipherStream(Stream stream, KeyStretcher key, ICipherFactory cipherFactory)
+        private CipherStream(Stream stream, KeyStretcher key, ICipherFactory? cipherFactory)
         {
             this.stream = stream;
             Key = key;
             CipherFactory = cipherFactory ?? ConfuzzleCore.CipherFactory.Default;
 
             using (var cipher = CipherFactory.CreateCipher())
+            {
                 BlockLength = cipher.BlockSize / 8;
+            }
 
             this.ctrTransform = new CtrModeTransform(this);
         }
@@ -66,7 +68,10 @@ namespace ConfuzzleCore
 
         private void OutputStreamDisposed()
         {
-            if (this.stream == null) throw new ObjectDisposedException("Underlying output stream has been disposed.");
+            if (this.stream == null)
+            {
+                throw new ObjectDisposedException("Underlying output stream has been disposed.");
+            }
         }
 
         /// <summary>
@@ -77,7 +82,8 @@ namespace ConfuzzleCore
             get
             {
                 OutputStreamDisposed();
-                return this.stream.CanSeek; }
+                return this.stream.CanSeek;
+            }
         }
 
         /// <summary>
@@ -88,7 +94,8 @@ namespace ConfuzzleCore
             get
             {
                 OutputStreamDisposed();
-                return this.stream.CanTimeout; }
+                return this.stream.CanTimeout;
+            }
         }
 
         /// <summary>
@@ -99,7 +106,8 @@ namespace ConfuzzleCore
             get
             {
                 OutputStreamDisposed();
-                return this.stream.CanWrite; }
+                return this.stream.CanWrite;
+            }
         }
 
         /// <summary>
@@ -123,7 +131,8 @@ namespace ConfuzzleCore
             get
             {
                 OutputStreamDisposed();
-                return this.stream.Length - this.startPosition; }
+                return this.stream.Length - this.startPosition;
+            }
         }
 
         /// <summary>
@@ -139,7 +148,7 @@ namespace ConfuzzleCore
         /// <summary>
         ///     A random value used to ensure that each encrypted file has different ciphertext.
         /// </summary>
-        public byte[] Nonce { get; private set; }
+        public byte[]? Nonce { get; private set; }
 
         /// <summary>
         ///     Any user-supplied data that should be saved with the stream.
@@ -160,8 +169,9 @@ namespace ConfuzzleCore
             get
             {
                 OutputStreamDisposed();
-                return this.position; }
-            set { Seek(value, SeekOrigin.Begin); }
+                return this.position;
+            }
+            set => Seek(value, SeekOrigin.Begin);
         }
 
         /// <summary>
@@ -185,10 +195,18 @@ namespace ConfuzzleCore
         /// <returns>
         ///     A <see cref="CipherStream" /> ready to encrypt data.
         /// </returns>
-        public static CipherStream Create(Stream stream, KeyStretcher key, ICipherFactory cipherFactory = null, byte[] nonce = null)
+        public static CipherStream Create(Stream stream, KeyStretcher key, ICipherFactory? cipherFactory = null, byte[]? nonce = null)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
-            if (key == null) throw new ArgumentNullException(nameof(key));
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             var ctrStream = new CipherStream(stream, key, cipherFactory);
             ctrStream.SetupParameters(nonce);
             return ctrStream;
@@ -214,10 +232,18 @@ namespace ConfuzzleCore
         /// <returns>
         ///     A <see cref="CipherStream" /> ready to encrypt data.
         /// </returns>
-        public static CipherStream Create(Stream stream, string password, ICipherFactory cipherFactory = null, byte[] nonce = null, byte[] salt = null)
+        public static CipherStream Create(Stream stream, string password, ICipherFactory? cipherFactory = null, byte[]? nonce = null, byte[]? salt = null)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new ArgumentNullException(nameof(password));
+            }
+
             var key = new KeyStretcher(password, salt);
             var ctrStream = new CipherStream(stream, key, cipherFactory);
             ctrStream.SetupParameters(nonce);
@@ -245,7 +271,7 @@ namespace ConfuzzleCore
         /// <returns>
         ///     A <see cref="CipherStream" /> ready to encrypt and decrypt data.
         /// </returns>
-        public static CipherStream Open(Stream stream, KeyStretcher key, ICipherFactory cipherFactory = null)
+        public static CipherStream Open(Stream stream, KeyStretcher key, ICipherFactory? cipherFactory = null)
         {
             var ctrStream = new CipherStream(stream, key, cipherFactory);
             ctrStream.LoadParameters();
@@ -323,7 +349,9 @@ namespace ConfuzzleCore
         {
             OutputStreamDisposed();
             if (!this.stream.CanSeek)
+            {
                 throw new NotSupportedException("Stream is not seekable.");
+            }
 
             long streamPosition;
 
@@ -341,7 +369,9 @@ namespace ConfuzzleCore
 
             // Ensure that the position does not precede the start of the encrypted data.
             if (streamPosition < this.startPosition)
+            {
                 streamPosition = this.stream.Seek(this.startPosition, SeekOrigin.Begin);
+            }
 
             // Save the updated position, relative to the start of the encrypted data.
             this.position = streamPosition - this.startPosition;
@@ -432,14 +462,21 @@ namespace ConfuzzleCore
                 // Read the header length and validate it.
                 int headerLength = this.stream.ReadUShort();
                 if (headerLength < HeaderOverhead + MinNonceLength)
+                {
                     throw new InvalidDataException("Stream header is invalid.");
+                }
 
                 // Read the nonce length and validate it.
                 int nonceLength = this.stream.ReadUShort();
-                if (HeaderOverhead / 2 + nonceLength > headerLength)
+                if ((HeaderOverhead / 2) + nonceLength > headerLength)
+                {
                     throw new InvalidDataException("Stream header is invalid.");
+                }
+
                 if (nonceLength < MinNonceLength || nonceLength > MaxNonceLength)
+                {
                     throw new InvalidDataException("Stream contains invalid nonce.");
+                }
 
                 // Read the nonce.
                 var nonce = this.stream.ReadExact(nonceLength);
@@ -447,7 +484,9 @@ namespace ConfuzzleCore
                 // Read the password salt length and validate it.
                 int passwordSaltLength = this.stream.ReadUShort();
                 if (HeaderOverhead + nonceLength + passwordSaltLength != headerLength)
+                {
                     throw new InvalidDataException("Stream header is invalid.");
+                }
 
                 // Read the password salt.
                 var passwordSalt = this.stream.ReadExact(passwordSaltLength);
@@ -480,13 +519,15 @@ namespace ConfuzzleCore
             }
         }
 
-        private void SetupParameters(byte[] nonce = null)
+        private void SetupParameters(byte[]? nonce = null)
         {
             // Ensure that there is a valid nonce, and that it's an acceptable length.
             if (nonce != null)
             {
                 if (nonce.Length < MinNonceLength || nonce.Length > MaxNonceLength)
+                {
                     throw new ArgumentException($"Nonce must be between {MinNonceLength} and {MaxNonceLength} bytes.");
+                }
 
                 // The maximum user data length is limited by the header format and the nonce length.
                 if (HeaderOverhead + nonce.Length + Key.Salt.Length > ushort.MaxValue)
@@ -508,10 +549,10 @@ namespace ConfuzzleCore
             Nonce = nonce;
 
             // Write the parameters to the stream.
-            this.stream.WriteUShort((ushort) (HeaderOverhead + nonce.Length + Key.Salt.Length));
-            this.stream.WriteUShort((ushort) nonce.Length);
+            this.stream.WriteUShort((ushort)(HeaderOverhead + nonce.Length + Key.Salt.Length));
+            this.stream.WriteUShort((ushort)nonce.Length);
             this.stream.Write(nonce);
-            this.stream.WriteUShort((ushort) Key.Salt.Length);
+            this.stream.WriteUShort((ushort)Key.Salt.Length);
             this.stream.Write(Key.Salt);
 
             // Reset the position of the encrypted stream.

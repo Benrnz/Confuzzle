@@ -15,7 +15,7 @@ namespace ConfuzzleCore
         /// <summary>
         ///     The default size of a password salt, in bytes.
         /// </summary>
-        public const int DefaultSaltSize = 16;
+        private const int DefaultSaltSize = 16;
 
         /// <summary>
         ///     Stretches a password using a random salt and the default iteration count.
@@ -41,7 +41,7 @@ namespace ConfuzzleCore
         /// </summary>
         /// <param name="password">The password to stretch.</param>
         /// <param name="salt">The salt used during password stretching.</param>
-        public KeyStretcher(string password, byte[] salt)
+        public KeyStretcher(string password, byte[]? salt)
             : base(password, salt ?? GenerateSalt(DefaultSaltSize), DefaultIterationCount)
         {
         }
@@ -81,7 +81,7 @@ namespace ConfuzzleCore
         /// </summary>
         /// <param name="password">The password to stretch.</param>
         /// <param name="salt">The salt used during password stretching.</param>
-        public KeyStretcher(byte[] password, byte[] salt)
+        public KeyStretcher(byte[] password, byte[]? salt)
             : base(password, salt ?? GenerateSalt(DefaultSaltSize), DefaultIterationCount)
         {
         }
@@ -100,17 +100,19 @@ namespace ConfuzzleCore
         /// <summary>
         ///     A random number generator for creating random salts.
         /// </summary>
-        public static RandomNumberGenerator Rng { get; set; } = new RNGCryptoServiceProvider();
+        private static RandomNumberGenerator Rng { get; set; } = new RNGCryptoServiceProvider();
 
         /// <summary>
         ///     Generates a new random salt.
         /// </summary>
         /// <param name="saltLength">The length of the salt, in bytes.</param>
         /// <returns>A new random salt.</returns>
-        public static byte[] GenerateSalt(int saltLength)
+        private static byte[] GenerateSalt(int saltLength)
         {
             if (saltLength < 8)
+            {
                 throw new ArgumentException("The specified salt size is smaller than 8 bytes.", nameof(saltLength));
+            }
 
             var salt = new byte[saltLength];
             Rng.GetBytes(salt);
@@ -122,10 +124,12 @@ namespace ConfuzzleCore
         /// </summary>
         /// <param name="keySizeBits">The size of the key in bits.</param>
         /// <returns>A key of the specified size.</returns>
-        public byte[] GetKeyBytes(int keySizeBits)
+        private byte[] GetKeyBytes(int keySizeBits)
         {
             if (keySizeBits % 8 != 0)
+            {
                 throw new ArgumentException("Key size must be a multiple of 8 bits.", nameof(keySizeBits));
+            }
 
             return GetBytes(keySizeBits / 8);
         }
@@ -146,14 +150,16 @@ namespace ConfuzzleCore
         /// <param name="algorithm">The algorithm to generate the key for.</param>
         /// <param name="maxKeySizeBits">The maximum key size in bits.</param>
         /// <returns>A key suitable for the specified algorithm.</returns>
-        public byte[] GetKeyBytes(SymmetricAlgorithm algorithm, int maxKeySizeBits)
+        private byte[] GetKeyBytes(SymmetricAlgorithm algorithm, int maxKeySizeBits)
         {
             var maxLegalSize = algorithm.LegalKeySizes
                 .Select(ks => GetMaxKeySize(ks, maxKeySizeBits))
                 .Max();
 
             if (maxLegalSize == 0)
+            {
                 throw new ArgumentException("Maximum key size is too low.", nameof(maxKeySizeBits));
+            }
 
             return GetKeyBytes(maxLegalSize);
         }
@@ -169,7 +175,9 @@ namespace ConfuzzleCore
             for (var keySize = keySizes.MaxSize; keySize >= keySizes.MinSize; keySize -= keySizes.SkipSize)
             {
                 if (keySize <= maxKeySizeBits)
+                {
                     return keySize;
+                }
             }
 
             return 0;

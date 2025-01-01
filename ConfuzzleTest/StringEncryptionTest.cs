@@ -21,10 +21,10 @@ namespace ConfuzzleTest
         public async Task DecryptString_ShouldReturnDecryptedResult_WithStringPassword(string inputData)
         {
             var encryptedResult = await Confuzzle.EncryptString(inputData)
-                .WithPassword(password)
+                .WithPassword(this.password)
                 .IntoByteArray();
             var decryptedResult = await Confuzzle.DecryptBytes(encryptedResult)
-                .WithPassword(password)
+                .WithPassword(this.password)
                 .IntoString();
 
             Assert.Equal(inputData, decryptedResult);
@@ -33,7 +33,7 @@ namespace ConfuzzleTest
         [Fact]
         public async Task DecryptString_ShouldThrow_GivenNullInputString()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => Confuzzle.DecryptBytes(null).WithPassword(password).IntoString());
+            await Assert.ThrowsAsync<ArgumentNullException>(() => Confuzzle.DecryptBytes(null).WithPassword(this.password).IntoString());
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace ConfuzzleTest
         public async Task EncryptString_ShouldReturnNonNullString_WithStringPassword(string inputData)
         {
             var encryptedResult = await Confuzzle.EncryptString(inputData)
-                .WithPassword(password)
+                .WithPassword(this.password)
                 .IntoByteArray();
 
             Assert.True(encryptedResult != null);
@@ -59,7 +59,7 @@ namespace ConfuzzleTest
         [Fact]
         public async Task EncryptString_ShouldThrow_GivenNullInputString()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => Confuzzle.EncryptString(null).WithPassword(password).IntoByteArray());
+            await Assert.ThrowsAsync<ArgumentNullException>(() => Confuzzle.EncryptString(null).WithPassword(this.password).IntoByteArray());
         }
 
         [Fact]
@@ -72,22 +72,22 @@ namespace ConfuzzleTest
         public async Task OutputToBase64Example()
         {
             var inputData = "The quick brown fox jumped over the lazy dog. 1234567890 -=_+ !@#$%^&*() {}|\\][ \"';: <>,./?";
-            output.WriteLine(inputData);
+            this.output.WriteLine(inputData);
 
             var encryptedResult = await Confuzzle.EncryptString(inputData)
-                .WithPassword(password)
+                .WithPassword(this.password)
                 .IntoByteArray();
             var base64 = Convert.ToBase64String(encryptedResult, Base64FormattingOptions.InsertLineBreaks);
-            output.WriteLine($"Encryption complete: {encryptedResult.Length} bytes");
-            output.WriteLine(base64);
+            this.output.WriteLine($"Encryption complete: {encryptedResult.Length} bytes");
+            this.output.WriteLine(base64);
 
             var base64ByteArray = Convert.FromBase64String(base64);
             var decryptedResult = await Confuzzle.DecryptBytes(base64ByteArray)
-                .WithPassword(password)
+                .WithPassword(this.password)
                 .IntoString();
 
-            output.WriteLine("Decryption complete:");
-            output.WriteLine(decryptedResult);
+            this.output.WriteLine("Decryption complete:");
+            this.output.WriteLine(decryptedResult);
         }
     }
 }

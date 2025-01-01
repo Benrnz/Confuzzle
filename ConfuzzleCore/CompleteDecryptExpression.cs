@@ -10,7 +10,7 @@ namespace ConfuzzleCore
 
         internal CompleteDecryptExpression(PasswordRequiredDecryptExpression expression)
         {
-            this.expression = expression;
+            this.expression = expression ?? throw new ArgumentNullException(nameof(expression));
         }
 
         /// <summary>

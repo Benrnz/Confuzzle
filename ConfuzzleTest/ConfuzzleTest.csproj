@@ -16,4 +16,11 @@
     <ProjectReference Include="..\ConfuzzleCore\ConfuzzleCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="TestFile.secure" />
+    <Content Include="TestFile.secure">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

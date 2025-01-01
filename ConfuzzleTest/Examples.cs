@@ -17,14 +17,14 @@ namespace ConfuzzleTest
                 .IntoFile("C:\\PathToMyFile\\Myfile.txt");
 
             // Encrypt a string.
-            byte[] bytes = await Confuzzle.EncryptString("This is the string I want to encrypt")
+            var bytes = await Confuzzle.EncryptString("This is the string I want to encrypt")
                 .WithPassword("MySecretSquirrelPassword")
                 .IntoByteArray();
             var base64 = Convert.ToBase64String(bytes);
 
             // Decrypt a string.
             var bytes2 = Convert.FromBase64String(base64);
-            string result = await Confuzzle.DecryptBytes(bytes2)
+            var result = await Confuzzle.DecryptBytes(bytes2)
                 .WithPassword("MySecretSquirrelPassword")
                 .IntoString();
         }

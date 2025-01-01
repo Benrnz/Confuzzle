@@ -9,11 +9,11 @@ namespace ConfuzzleCore
     public class PasswordRequiredEncryptExpression
     {
         internal SourceMode EncryptFrom { get; private set; }
-        internal string Password { get; private set; }
-        internal SecureString SecurePassword { get; private set; }
+        internal string? Password { get; private set; }
+        internal SecureString? SecurePassword { get; private set; }
 
-        internal string SourceFile { get; private set; }
-        internal string StringInputData { get; private set; }
+        internal string? SourceFile { get; private set; }
+        internal string? StringInputData { get; private set; }
 
         /// <summary>
         ///     Set the password to use to encrypt the data. If the password is incorrect the output will be garbled; no exceptions
@@ -22,7 +22,11 @@ namespace ConfuzzleCore
         /// </summary>
         public CompleteEncryptExpression WithPassword(string password)
         {
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new ArgumentNullException(nameof(password));
+            }
+
             Password = password;
             return new CompleteEncryptExpression(this);
         }
@@ -33,8 +37,7 @@ namespace ConfuzzleCore
         /// </summary>
         public CompleteEncryptExpression WithPassword(SecureString password)
         {
-            if (password == null) throw new ArgumentNullException(nameof(password));
-            SecurePassword = password;
+            SecurePassword = password ?? throw new ArgumentNullException(nameof(password));
             return new CompleteEncryptExpression(this);
         }
 

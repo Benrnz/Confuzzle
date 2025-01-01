@@ -5,6 +5,7 @@ using CommandLine.Text;
 
 namespace ConfuzzleCommandLine
 {
+    // ReSharper disable once ClassNeverInstantiated.Global Used implicitly by CommandLineParser
     public class Options
     {
         [Option('d', "decrypt", HelpText = "Decrypt mode - decrypts the supplied Input File.")]
