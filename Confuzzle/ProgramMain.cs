@@ -62,7 +62,7 @@ namespace ConfuzzleCommandLine
             return $"{versionInfo?.Major}.{versionInfo?.Minor}.{versionInfo?.Build} {fileDate}";
         }
 
-        internal static void InitialiseOutputFile(Options options)
+        private static void InitialiseOutputFile(Options options)
         {
             if (File.Exists(options.OutputFile))
             {

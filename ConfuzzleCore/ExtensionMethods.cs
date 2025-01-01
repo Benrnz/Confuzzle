@@ -93,17 +93,14 @@
         /// </summary>
         /// <param name="stream">The stream to write to.</param>
         /// <param name="value">The bytes to write.</param>
-        public static void Write(this Stream stream, byte[] value)
+        private static void Write(this Stream stream, byte[] value)
         {
             if (stream == null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            if (value != null)
-            {
-                stream.Write(value, 0, value.Length);
-            }
+            stream.Write(value, 0, value.Length);
         }
 
         /// <summary>

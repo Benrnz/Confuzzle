@@ -9,11 +9,11 @@ namespace ConfuzzleCore
     public class PasswordRequiredDecryptExpression
     {
         internal SourceMode DecryptFrom { get; private set; }
-        internal string Password { get; private set; }
-        internal SecureString SecurePassword { get; private set; }
+        internal string? Password { get; private set; }
+        internal SecureString? SecurePassword { get; private set; }
 
-        internal byte[] SourceData { get; private set; }
-        internal string SourceFile { get; private set; }
+        internal byte[]? SourceData { get; private set; }
+        internal string? SourceFile { get; private set; }
 
         /// <summary>
         ///     Set the password to use to decrypt the data. If the password is incorrect the output will be garbled; no exceptions

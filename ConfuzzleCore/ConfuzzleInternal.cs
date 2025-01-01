@@ -24,7 +24,7 @@ namespace ConfuzzleCore
         public static async Task DecryptFromBytesIntoNewFileAsync(byte[] inputData, string outputFileName, SecureString password)
         {
             var data = await DecryptString(inputData, () => SecureStringToString(password));
-            File.WriteAllText(outputFileName, data);
+            await File.WriteAllTextAsync(outputFileName, data);
         }
 
         public static async Task DecryptFromBytesIntoNewFileAsync(byte[] inputData, string outputFileName, string password)
@@ -35,7 +35,7 @@ namespace ConfuzzleCore
             }
 
             var data = await DecryptString(inputData, () => password);
-            File.WriteAllText(outputFileName, data);
+            await File.WriteAllTextAsync(outputFileName, data);
         }
 
         public static async Task<string> DecryptFromBytesIntoStringAsync(byte[] inputData, string password)
@@ -128,7 +128,7 @@ namespace ConfuzzleCore
             await EncryptStringIntoFile(inputData, outputFileName, () => SecureStringToString(password));
         }
 
-        internal static string SecureStringToString(SecureString password)
+        private static string SecureStringToString(SecureString password)
         {
             if (password == null)
             {
@@ -139,7 +139,7 @@ namespace ConfuzzleCore
             try
             {
                 valuePtr = Marshal.SecureStringToGlobalAllocUnicode(password);
-                return Marshal.PtrToStringUni(valuePtr);
+                return Marshal.PtrToStringUni(valuePtr)!;
             }
             finally
             {
@@ -154,21 +154,17 @@ namespace ConfuzzleCore
                 throw new ArgumentNullException(nameof(inputFileName));
             }
 
-            using (var inputStream = new FileStream(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true))
+            await using var inputStream = new FileStream(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
+            using var outputStream = new MemoryStream();
+            await using (var cryptoStream = CipherStream.Open(inputStream, getPassword()))
             {
-                using (var outputStream = new MemoryStream())
-                {
-                    using (var cryptoStream = CipherStream.Open(inputStream, getPassword()))
-                    {
-                        await cryptoStream.CopyToAsync(outputStream);
-                    }
+                await cryptoStream.CopyToAsync(outputStream);
+            }
 
-                    outputStream.Position = 0;
-                    using (var reader = new StreamReader(outputStream))
-                    {
-                        return await reader.ReadToEndAsync();
-                    }
-                }
+            outputStream.Position = 0;
+            using (var reader = new StreamReader(outputStream))
+            {
+                return await reader.ReadToEndAsync();
             }
         }
 
@@ -184,16 +180,10 @@ namespace ConfuzzleCore
                 throw new ArgumentNullException(nameof(outputFileName));
             }
 
-            using (var inputStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                using (var outputStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-                {
-                    using (var cryptoStream = CipherStream.Open(inputStream, getPassword()))
-                    {
-                        await cryptoStream.CopyToAsync(outputStream);
-                    }
-                }
-            }
+            await using var inputStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            await using var outputStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+            await using var cryptoStream = CipherStream.Open(inputStream, getPassword());
+            await cryptoStream.CopyToAsync(outputStream);
         }
 
         private static async Task<string> DecryptString(byte[] inputData, Func<string> getPassword)
@@ -203,21 +193,17 @@ namespace ConfuzzleCore
                 throw new ArgumentNullException(nameof(inputData));
             }
 
-            using (var inputStream = new MemoryStream(inputData))
+            using var inputStream = new MemoryStream(inputData);
+            using var outputStream = new MemoryStream();
+            await using (var cryptoStream = CipherStream.Open(inputStream, getPassword()))
             {
-                using (var outputStream = new MemoryStream())
-                {
-                    using (var cryptoStream = CipherStream.Open(inputStream, getPassword()))
-                    {
-                        await cryptoStream.CopyToAsync(outputStream);
-                    }
+                await cryptoStream.CopyToAsync(outputStream);
+            }
 
-                    outputStream.Position = 0;
-                    using (var reader = new StreamReader(outputStream))
-                    {
-                        return await reader.ReadToEndAsync();
-                    }
-                }
+            outputStream.Position = 0;
+            using (var reader = new StreamReader(outputStream))
+            {
+                return await reader.ReadToEndAsync();
             }
         }
 
@@ -228,17 +214,13 @@ namespace ConfuzzleCore
                 throw new ArgumentNullException(nameof(inputFileName));
             }
 
-            using (var inputStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+            await using var inputStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var outputStream = new MemoryStream();
+            await using (var cryptoStream = CipherStream.Create(outputStream, getPassword()))
             {
-                using (var outputStream = new MemoryStream())
-                {
-                    using (var cryptoStream = CipherStream.Create(outputStream, getPassword()))
-                    {
-                        await inputStream.CopyToAsync(cryptoStream);
-                    }
-                    return outputStream.ToArray();
-                }
+                await inputStream.CopyToAsync(cryptoStream);
             }
+            return outputStream.ToArray();
         }
 
         private static async Task EncryptFileIntoFile(string inputFileName, string outputFileName, Func<string> getPassword)
@@ -253,16 +235,10 @@ namespace ConfuzzleCore
                 throw new ArgumentNullException(nameof(outputFileName));
             }
 
-            using (var inputStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                using (var outputStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-                {
-                    using (var cryptoStream = CipherStream.Create(outputStream, getPassword()))
-                    {
-                        await inputStream.CopyToAsync(cryptoStream);
-                    }
-                }
-            }
+            await using var inputStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            await using var outputStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+            await using var cryptoStream = CipherStream.Create(outputStream, getPassword());
+            await inputStream.CopyToAsync(cryptoStream);
         }
 
         private static async Task<byte[]> EncryptString(string inputData, Func<string> getPassword)
@@ -272,18 +248,14 @@ namespace ConfuzzleCore
                 throw new ArgumentNullException(nameof(inputData));
             }
 
-            using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(inputData)))
+            using var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(inputData));
+            using var outputStream = new MemoryStream();
+            await using (var cryptoStream = CipherStream.Create(outputStream, getPassword()))
             {
-                using (var outputStream = new MemoryStream())
-                {
-                    using (var cryptoStream = CipherStream.Create(outputStream, getPassword()))
-                    {
-                        await inputStream.CopyToAsync(cryptoStream);
-                    }
-
-                    return outputStream.ToArray();
-                }
+                await inputStream.CopyToAsync(cryptoStream);
             }
+
+            return outputStream.ToArray();
         }
 
         private static async Task EncryptStringIntoFile(string inputData, string outputFileName, Func<string> getPassword)
@@ -298,16 +270,10 @@ namespace ConfuzzleCore
                 throw new ArgumentNullException(nameof(outputFileName));
             }
 
-            using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(inputData)))
-            {
-                using (var outputStream = new FileStream(outputFileName, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, true))
-                {
-                    using (var cryptoStream = CipherStream.Create(outputStream, getPassword()))
-                    {
-                        await inputStream.CopyToAsync(cryptoStream);
-                    }
-                }
-            }
+            using var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(inputData));
+            await using var outputStream = new FileStream(outputFileName, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, true);
+            await using var cryptoStream = CipherStream.Create(outputStream, getPassword());
+            await inputStream.CopyToAsync(cryptoStream);
         }
     }
 }

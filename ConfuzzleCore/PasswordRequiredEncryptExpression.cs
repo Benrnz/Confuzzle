@@ -9,11 +9,11 @@ namespace ConfuzzleCore
     public class PasswordRequiredEncryptExpression
     {
         internal SourceMode EncryptFrom { get; private set; }
-        internal string Password { get; private set; }
-        internal SecureString SecurePassword { get; private set; }
+        internal string? Password { get; private set; }
+        internal SecureString? SecurePassword { get; private set; }
 
-        internal string SourceFile { get; private set; }
-        internal string StringInputData { get; private set; }
+        internal string? SourceFile { get; private set; }
+        internal string? StringInputData { get; private set; }
 
         /// <summary>
         ///     Set the password to use to encrypt the data. If the password is incorrect the output will be garbled; no exceptions

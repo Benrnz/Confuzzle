@@ -5,7 +5,7 @@ using ConfuzzleCommandLine;
 
 if (args.Length == 0)
 {
-    args = new[] { "--help" };
+    args = ["--help"];
 }
 
 Console.WriteLine("Confuzzle - File encryption - Rees.biz");

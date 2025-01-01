@@ -35,7 +35,7 @@ namespace ConfuzzleCore
         ///     A factory for creating cryptographic algorithms. If <c>null</c> is provided, a default factory will be
         ///     used.
         /// </param>
-        private CipherStream(Stream stream, KeyStretcher key, ICipherFactory cipherFactory)
+        private CipherStream(Stream stream, KeyStretcher key, ICipherFactory? cipherFactory)
         {
             this.stream = stream;
             Key = key;
@@ -148,7 +148,7 @@ namespace ConfuzzleCore
         /// <summary>
         ///     A random value used to ensure that each encrypted file has different ciphertext.
         /// </summary>
-        public byte[] Nonce { get; private set; }
+        public byte[]? Nonce { get; private set; }
 
         /// <summary>
         ///     Any user-supplied data that should be saved with the stream.
@@ -195,7 +195,7 @@ namespace ConfuzzleCore
         /// <returns>
         ///     A <see cref="CipherStream" /> ready to encrypt data.
         /// </returns>
-        public static CipherStream Create(Stream stream, KeyStretcher key, ICipherFactory cipherFactory = null, byte[] nonce = null)
+        public static CipherStream Create(Stream stream, KeyStretcher key, ICipherFactory? cipherFactory = null, byte[]? nonce = null)
         {
             if (stream == null)
             {
@@ -232,7 +232,7 @@ namespace ConfuzzleCore
         /// <returns>
         ///     A <see cref="CipherStream" /> ready to encrypt data.
         /// </returns>
-        public static CipherStream Create(Stream stream, string password, ICipherFactory cipherFactory = null, byte[] nonce = null, byte[] salt = null)
+        public static CipherStream Create(Stream stream, string password, ICipherFactory? cipherFactory = null, byte[]? nonce = null, byte[]? salt = null)
         {
             if (stream == null)
             {
@@ -271,7 +271,7 @@ namespace ConfuzzleCore
         /// <returns>
         ///     A <see cref="CipherStream" /> ready to encrypt and decrypt data.
         /// </returns>
-        public static CipherStream Open(Stream stream, KeyStretcher key, ICipherFactory cipherFactory = null)
+        public static CipherStream Open(Stream stream, KeyStretcher key, ICipherFactory? cipherFactory = null)
         {
             var ctrStream = new CipherStream(stream, key, cipherFactory);
             ctrStream.LoadParameters();
@@ -519,7 +519,7 @@ namespace ConfuzzleCore
             }
         }
 
-        private void SetupParameters(byte[] nonce = null)
+        private void SetupParameters(byte[]? nonce = null)
         {
             // Ensure that there is a valid nonce, and that it's an acceptable length.
             if (nonce != null)

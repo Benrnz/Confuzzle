@@ -28,9 +28,9 @@ namespace ConfuzzleCore
 
         private readonly CipherStream stream;
 
-        private ICryptoTransform cryptoTransform;
+        private ICryptoTransform? cryptoTransform;
         private byte[] ctrSeed;
-        private byte[] ctrTransform;
+        private byte[]? ctrTransform;
         private long endBlock = -1;
 
         private bool isDisposed; // To detect redundant calls
@@ -80,7 +80,7 @@ namespace ConfuzzleCore
                 // Do the XOR transformation based on the CTR transformation block.
                 for (var index = 0; index < xorCount; ++index)
                 {
-                    data[offset + index] ^= this.ctrTransform[xorIndex + index];
+                    data[offset + index] ^= this.ctrTransform![xorIndex + index];
                 }
 
                 // Update the count and offsets based on the amount of data copied this round.
@@ -122,17 +122,16 @@ namespace ConfuzzleCore
         {
             var iv = new byte[this.blockLength];
 
-            using (var hashFunction = this.stream.CipherFactory.CreateHash())
-            {
-                // The IV is based on the nonce and any associated user data.
-                var ivSeed = new byte[this.stream.Nonce.Length + this.stream.PasswordSalt.Length];
-                Array.Copy(this.stream.Nonce, 0, ivSeed, 0, this.stream.Nonce.Length);
-                Array.Copy(this.stream.PasswordSalt, 0, ivSeed, this.stream.Nonce.Length, this.stream.PasswordSalt.Length);
+            using var hashFunction = this.stream.CipherFactory.CreateHash();
 
-                // Fill the IV using the hash of the seed. This may use only part of the hash, or may repeat some or all
-                // of the hash.
-                iv.Fill(hashFunction.ComputeHash(ivSeed));
-            }
+            // The IV is based on the nonce and any associated user data.
+            var ivSeed = new byte[this.stream.Nonce.Length + this.stream.PasswordSalt.Length];
+            Array.Copy(this.stream.Nonce, 0, ivSeed, 0, this.stream.Nonce.Length);
+            Array.Copy(this.stream.PasswordSalt, 0, ivSeed, this.stream.Nonce.Length, this.stream.PasswordSalt.Length);
+
+            // Fill the IV using the hash of the seed. This may use only part of the hash, or may repeat some or all
+            // of the hash.
+            iv.Fill(hashFunction.ComputeHash(ivSeed));
 
             return iv;
         }
